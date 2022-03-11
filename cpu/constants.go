@@ -57,54 +57,57 @@ const (
 	BRK_IMP = 0x00
 	TAX_IMP = 0xAA
 	INX_IMP = 0xE8
+
+	OTHER = 0xFF
 )
 
 type Opcode struct {
-	Code     uint8
-	ByteSize int
-	Cycles   int
-	Mode     int
+	Code      uint8
+	ByteSize  int
+	Cycles    int
+	Mode      int
+	Operation func(cpu *Cpu, mem *Memory, mode int)
 }
 
 var Opcodes = map[uint8]Opcode{
-	LDA_IMM: {Code: LDA_IMM, ByteSize: 2, Cycles: 2, Mode: Immediate},
-	LDA_ZER: {Code: LDA_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	LDA_ZRX: {Code: LDA_ZRX, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
-	LDA_ABS: {Code: LDA_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDA_ABX: {Code: LDA_ABX, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
-	LDA_ABY: {Code: LDA_ABY, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
-	LDA_IDX: {Code: LDA_IDX, ByteSize: 2, Cycles: 6, Mode: IndirectX},
-	LDA_IDY: {Code: LDA_IDY, ByteSize: 2, Cycles: 5 /*+1 crossed*/, Mode: IndirectY1},
+	LDA_IMM: {Code: LDA_IMM, Operation: lda, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	LDA_ZER: {Code: LDA_ZER, Operation: lda, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	LDA_ZRX: {Code: LDA_ZRX, Operation: lda, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	LDA_ABS: {Code: LDA_ABS, Operation: lda, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	LDA_ABX: {Code: LDA_ABX, Operation: lda, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
+	LDA_ABY: {Code: LDA_ABY, Operation: lda, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
+	LDA_IDX: {Code: LDA_IDX, Operation: lda, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	LDA_IDY: {Code: LDA_IDY, Operation: lda, ByteSize: 2, Cycles: 5 /*+1 crossed*/, Mode: IndirectY1},
 
-	LDX_IMM: {Code: LDX_IMM, ByteSize: 2, Cycles: 2, Mode: Immediate},
-	LDX_ZER: {Code: LDX_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	LDX_ZRY: {Code: LDX_ZRY, ByteSize: 2, Cycles: 4, Mode: ZeroPageY},
-	LDX_ABS: {Code: LDX_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDX_ABY: {Code: LDX_ABY, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
+	LDX_IMM: {Code: LDX_IMM, Operation: ldx, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	LDX_ZER: {Code: LDX_ZER, Operation: ldx, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	LDX_ZRY: {Code: LDX_ZRY, Operation: ldx, ByteSize: 2, Cycles: 4, Mode: ZeroPageY},
+	LDX_ABS: {Code: LDX_ABS, Operation: ldx, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	LDX_ABY: {Code: LDX_ABY, Operation: ldx, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
 
-	LDY_IMM: {Code: LDY_IMM, ByteSize: 2, Cycles: 2, Mode: Immediate},
-	LDY_ZER: {Code: LDY_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	LDY_ZRX: {Code: LDY_ZRX, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
-	LDY_ABS: {Code: LDY_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDY_ABX: {Code: LDY_ABX, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
+	LDY_IMM: {Code: LDY_IMM, Operation: ldy, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	LDY_ZER: {Code: LDY_ZER, Operation: ldy, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	LDY_ZRX: {Code: LDY_ZRX, Operation: ldy, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	LDY_ABS: {Code: LDY_ABS, Operation: ldy, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	LDY_ABX: {Code: LDY_ABX, Operation: ldy, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
 
-	STA_ZER: {Code: STA_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	STA_ZRX: {Code: STA_ZRX, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
-	STA_ABS: {Code: STA_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	STA_ABX: {Code: STA_ABX, ByteSize: 3, Cycles: 5, Mode: AbsoluteX},
-	STA_ABY: {Code: STA_ABY, ByteSize: 3, Cycles: 5, Mode: AbsoluteY},
-	STA_IDX: {Code: STA_IDX, ByteSize: 2, Cycles: 6, Mode: IndirectX},
-	STA_IDY: {Code: STA_IDY, ByteSize: 2, Cycles: 6, Mode: IndirectY},
+	STA_ZER: {Code: STA_ZER, Operation: sta, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	STA_ZRX: {Code: STA_ZRX, Operation: sta, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	STA_ABS: {Code: STA_ABS, Operation: sta, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	STA_ABX: {Code: STA_ABX, Operation: sta, ByteSize: 3, Cycles: 5, Mode: AbsoluteX},
+	STA_ABY: {Code: STA_ABY, Operation: sta, ByteSize: 3, Cycles: 5, Mode: AbsoluteY},
+	STA_IDX: {Code: STA_IDX, Operation: sta, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	STA_IDY: {Code: STA_IDY, Operation: sta, ByteSize: 2, Cycles: 6, Mode: IndirectY},
 
-	STX_ZER: {Code: STX_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	STX_ZRY: {Code: STX_ZRY, ByteSize: 2, Cycles: 4, Mode: ZeroPageY},
-	STX_ABS: {Code: STX_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	STX_ZER: {Code: STX_ZER, Operation: stx, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	STX_ZRY: {Code: STX_ZRY, Operation: stx, ByteSize: 2, Cycles: 4, Mode: ZeroPageY},
+	STX_ABS: {Code: STX_ABS, Operation: stx, ByteSize: 3, Cycles: 4, Mode: Absolute},
 
-	STY_ZER: {Code: STY_ZER, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
-	STY_ZRX: {Code: STY_ZRX, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
-	STY_ABS: {Code: STY_ABS, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	STY_ZER: {Code: STY_ZER, Operation: sty, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	STY_ZRX: {Code: STY_ZRX, Operation: sty, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	STY_ABS: {Code: STY_ABS, Operation: sty, ByteSize: 3, Cycles: 4, Mode: Absolute},
 
-	BRK_IMP: {Code: BRK_IMP, ByteSize: 1, Cycles: 7, Mode: Implied},
+	BRK_IMP: {Code: BRK_IMP, Operation: brk, ByteSize: 1, Cycles: 7, Mode: Implied},
 }
 
 const (

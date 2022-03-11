@@ -5,36 +5,6 @@ type Cpu struct {
 	Registers
 }
 
-/*
-func (c *Cpu) getNextByte(memory Memory) uint8 {
-	opcode := memory.readByte(uint16(c.ProgramCounter))
-	c.ProgramCounter++
-	return opcode
-}
-*/
-
-/*
-func (c *Cpu) ldaImm(memory Memory) {
-	operand := c.getNextByte(memory)
-	c.Accumulator = Register8(operand)
-
-	c.updateZeroAndNegativeFlags(c.Accumulator)
-
-}
-
-func (c *Cpu) taxImp() {
-	c.XIndex = c.Accumulator
-
-	c.updateZeroAndNegativeFlags(c.XIndex)
-}
-
-func (c *Cpu) inxImp() {
-	c.XIndex += 1
-
-	c.updateZeroAndNegativeFlags(c.XIndex)
-}
-*/
-
 func (c *Cpu) updateZeroAndNegativeFlags(value Register8) {
 	if value == 0 {
 		c.Status.Add(Zero)
@@ -49,7 +19,24 @@ func (c *Cpu) updateZeroAndNegativeFlags(value Register8) {
 	}
 }
 
-// TODO: add private func to clear this
+func zeroPageOperandAddr(pc Register16, mem *Memory, register Register8) uint16 {
+	operandAddr := mem.readByte(uint16(pc))
+	operandAddr += uint8(register)
+	return uint16(operandAddr)
+}
+
+func absoluteOperandAddr(pc Register16, mem *Memory, register Register8) uint16 {
+	operandAddr := mem.readWord(uint16(pc))
+	addr := operandAddr + uint16(register)
+	return addr
+}
+
+func incrementWhenPageCrossed(c *Cpu, operandAddr uint16, resAddr uint16) {
+	if (resAddr >> 8) != (operandAddr >> 8) {
+		c.Cycle++
+	}
+}
+
 func (c *Cpu) getOperandAddress(mem *Memory, mode int) uint16 {
 	switch mode {
 	case Implied:
@@ -57,43 +44,30 @@ func (c *Cpu) getOperandAddress(mem *Memory, mode int) uint16 {
 	case Immediate:
 		return uint16(c.ProgramCounter)
 	case ZeroPage:
-		return uint16(mem.readByte(uint16(c.ProgramCounter)))
+		return zeroPageOperandAddr(c.ProgramCounter, mem, 0)
 	case ZeroPageX:
-		operandAddr := mem.readByte(uint16(c.ProgramCounter))
-		operandAddr += uint8(c.XIndex)
-		return uint16(operandAddr)
+		return zeroPageOperandAddr(c.ProgramCounter, mem, c.XIndex)
 	case ZeroPageY:
-		operandAddr := mem.readByte(uint16(c.ProgramCounter))
-		operandAddr += uint8(c.YIndex)
-		return uint16(operandAddr)
+		return zeroPageOperandAddr(c.ProgramCounter, mem, c.YIndex)
 	case Absolute:
-		return mem.readWord(uint16(c.ProgramCounter))
+		return absoluteOperandAddr(c.ProgramCounter, mem, 0)
 	case AbsoluteX:
-		operandAddr := mem.readWord(uint16(c.ProgramCounter))
-		res := operandAddr + uint16(c.XIndex)
-		return res
+		return absoluteOperandAddr(c.ProgramCounter, mem, c.XIndex)
 	case AbsoluteX1:
 		operandAddr := mem.readWord(uint16(c.ProgramCounter))
 		res := operandAddr + uint16(c.XIndex)
-		if (res >> 8) != (operandAddr >> 8) {
-			c.Cycle++
-		}
+		incrementWhenPageCrossed(c, operandAddr, res)
 		return res
 	case AbsoluteY:
-		operandAddr := mem.readWord(uint16(c.ProgramCounter))
-		res := operandAddr + uint16(c.YIndex)
-		return res
+		return absoluteOperandAddr(c.ProgramCounter, mem, c.YIndex)
 	case AbsoluteY1:
 		operandAddr := mem.readWord(uint16(c.ProgramCounter))
 		res := operandAddr + uint16(c.YIndex)
-		if (res >> 8) != (operandAddr >> 8) {
-			c.Cycle++
-		}
+		incrementWhenPageCrossed(c, operandAddr, res)
 		return res
 	case IndirectX:
 		operand := mem.readByte(uint16(c.ProgramCounter))
 		operand += uint8(c.XIndex)
-
 		return mem.readWord(uint16(operand))
 	case IndirectY:
 		operand := mem.readByte(uint16(c.ProgramCounter))
@@ -104,46 +78,58 @@ func (c *Cpu) getOperandAddress(mem *Memory, mode int) uint16 {
 		operand := mem.readByte(uint16(c.ProgramCounter))
 		word := mem.readWord(uint16(operand))
 		res := word + uint16(c.YIndex)
-		if (res >> 8) != (word >> 8) {
-			c.Cycle++
-		}
+		incrementWhenPageCrossed(c, word, res)
 		return res
 	default:
 		panic("Addressing mode not implemented")
 	}
 }
 
-func (c *Cpu) lda(mem *Memory, mode int) {
+func lda(c *Cpu, mem *Memory, mode int) {
 	operand := mem.readByte(c.getOperandAddress(mem, mode))
 	c.Accumulator = Register8(operand)
 	c.updateZeroAndNegativeFlags(Register8(operand))
 }
 
-func (c *Cpu) ldx(mem *Memory, mode int) {
+func ldx(c *Cpu, mem *Memory, mode int) {
 	operand := mem.readByte(c.getOperandAddress(mem, mode))
 	c.XIndex = Register8(operand)
 	c.updateZeroAndNegativeFlags(Register8(operand))
 }
 
-func (c *Cpu) ldy(mem *Memory, mode int) {
+func ldy(c *Cpu, mem *Memory, mode int) {
 	operand := mem.readByte(c.getOperandAddress(mem, mode))
 	c.YIndex = Register8(operand)
 	c.updateZeroAndNegativeFlags(Register8(operand))
 }
 
-func (c *Cpu) sta(mem *Memory, mode int) {
+func sta(c *Cpu, mem *Memory, mode int) {
 	addrToFill := c.getOperandAddress(mem, mode)
 	mem.writeByte(uint16(addrToFill), uint8(c.Accumulator))
 }
 
-func (c *Cpu) stx(mem *Memory, mode int) {
+func stx(c *Cpu, mem *Memory, mode int) {
 	addrToFill := c.getOperandAddress(mem, mode)
 	mem.writeByte(uint16(addrToFill), uint8(c.XIndex))
 }
 
-func (c *Cpu) sty(mem *Memory, mode int) {
+// TODO: impl this func
+func brk(c *Cpu, mem *Memory, mode int) {
+
+}
+
+func sty(c *Cpu, mem *Memory, mode int) {
 	addrToFill := c.getOperandAddress(mem, mode)
 	mem.writeByte(uint16(addrToFill), uint8(c.YIndex))
+}
+
+func (c *Cpu) interpret(opcode uint8, memory *Memory) {
+	opc := Opcodes[opcode]
+
+	opc.Operation(c, memory, opc.Mode)
+
+	c.Cycle += opc.Cycles
+	c.ProgramCounter += Register16(opc.ByteSize - 1)
 }
 
 func (c *Cpu) Reset(mem *Memory) {
@@ -156,43 +142,14 @@ func (c *Cpu) Reset(mem *Memory) {
 	c.ProgramCounter = Register16(mem.readWord(0xFFFC))
 }
 
-// TODO: maybe add EACH by group string like "STA" "LDA"
-func (c *Cpu) interpret(opcode uint8, memory *Memory) bool {
-	opc := Opcodes[opcode]
-
-	switch opcode {
-	case LDA_IMM, LDA_ZER, LDA_ZRX, LDA_ABS, LDA_ABX, LDA_ABY, LDA_IDX, LDA_IDY:
-		c.lda(memory, opc.Mode)
-	case LDX_IMM, LDX_ZER, LDX_ZRY, LDX_ABS, LDX_ABY:
-		c.ldx(memory, opc.Mode)
-	case LDY_IMM, LDY_ZER, LDY_ZRX, LDY_ABS, LDY_ABX:
-		c.ldy(memory, opc.Mode)
-	case STA_ZER, STA_ZRX, STA_ABS, STA_ABX, STA_ABY, STA_IDX, STA_IDY:
-		c.sta(memory, opc.Mode)
-	case STX_ZER, STX_ZRY, STX_ABS:
-		c.stx(memory, opc.Mode)
-	case STY_ZER, STY_ZRX, STY_ABS:
-		c.sty(memory, opc.Mode)
-	case BRK_IMP:
-		c.Cycle += 7
-		c.ProgramCounter += Register16(opc.ByteSize - 1)
-		return true
-	default:
-		panic("Unknown opcode!")
-	}
-
-	c.Cycle += opc.Cycles
-	c.ProgramCounter += Register16(opc.ByteSize - 1)
-
-	return false
-}
-
 func (c *Cpu) Run(memory *Memory) {
 	for {
 		opcode := memory.readByte(uint16(c.ProgramCounter))
 		c.ProgramCounter++
 
-		if c.interpret(opcode, memory) {
+		c.interpret(opcode, memory)
+
+		if opcode == BRK_IMP {
 			break
 		}
 	}
