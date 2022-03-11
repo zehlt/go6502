@@ -54,9 +54,15 @@ const (
 	STY_ZRX = 0x94
 	STY_ABS = 0x8C
 
-	BRK_IMP = 0x00
 	TAX_IMP = 0xAA
-	INX_IMP = 0xE8
+	TAY_IMP = 0xA8
+	TXA_IMP = 0x8A
+	TYA_IMP = 0x98
+
+	INC_ZER = 0xE6
+	INC_ZRX = 0xF6
+
+	BRK_IMP = 0x00
 
 	OTHER = 0xFF
 )
@@ -70,27 +76,30 @@ type Opcode struct {
 }
 
 var Opcodes = map[uint8]Opcode{
+
+	// Load Operations
 	LDA_IMM: {Code: LDA_IMM, Operation: lda, ByteSize: 2, Cycles: 2, Mode: Immediate},
 	LDA_ZER: {Code: LDA_ZER, Operation: lda, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	LDA_ZRX: {Code: LDA_ZRX, Operation: lda, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
 	LDA_ABS: {Code: LDA_ABS, Operation: lda, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDA_ABX: {Code: LDA_ABX, Operation: lda, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
-	LDA_ABY: {Code: LDA_ABY, Operation: lda, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
+	LDA_ABX: {Code: LDA_ABX, Operation: lda, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	LDA_ABY: {Code: LDA_ABY, Operation: lda, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
 	LDA_IDX: {Code: LDA_IDX, Operation: lda, ByteSize: 2, Cycles: 6, Mode: IndirectX},
-	LDA_IDY: {Code: LDA_IDY, Operation: lda, ByteSize: 2, Cycles: 5 /*+1 crossed*/, Mode: IndirectY1},
+	LDA_IDY: {Code: LDA_IDY, Operation: lda, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
 
 	LDX_IMM: {Code: LDX_IMM, Operation: ldx, ByteSize: 2, Cycles: 2, Mode: Immediate},
 	LDX_ZER: {Code: LDX_ZER, Operation: ldx, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	LDX_ZRY: {Code: LDX_ZRY, Operation: ldx, ByteSize: 2, Cycles: 4, Mode: ZeroPageY},
 	LDX_ABS: {Code: LDX_ABS, Operation: ldx, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDX_ABY: {Code: LDX_ABY, Operation: ldx, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteY1},
+	LDX_ABY: {Code: LDX_ABY, Operation: ldx, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
 
 	LDY_IMM: {Code: LDY_IMM, Operation: ldy, ByteSize: 2, Cycles: 2, Mode: Immediate},
 	LDY_ZER: {Code: LDY_ZER, Operation: ldy, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	LDY_ZRX: {Code: LDY_ZRX, Operation: ldy, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
 	LDY_ABS: {Code: LDY_ABS, Operation: ldy, ByteSize: 3, Cycles: 4, Mode: Absolute},
-	LDY_ABX: {Code: LDY_ABX, Operation: ldy, ByteSize: 3, Cycles: 4 /*+1 crossed*/, Mode: AbsoluteX1},
+	LDY_ABX: {Code: LDY_ABX, Operation: ldy, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
 
+	// Store Operations
 	STA_ZER: {Code: STA_ZER, Operation: sta, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	STA_ZRX: {Code: STA_ZRX, Operation: sta, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
 	STA_ABS: {Code: STA_ABS, Operation: sta, ByteSize: 3, Cycles: 4, Mode: Absolute},
@@ -106,6 +115,16 @@ var Opcodes = map[uint8]Opcode{
 	STY_ZER: {Code: STY_ZER, Operation: sty, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	STY_ZRX: {Code: STY_ZRX, Operation: sty, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
 	STY_ABS: {Code: STY_ABS, Operation: sty, ByteSize: 3, Cycles: 4, Mode: Absolute},
+
+	// Register Transfers
+	TAX_IMP: {Code: TAX_IMP, Operation: tax, ByteSize: 1, Cycles: 2, Mode: Implied},
+	TAY_IMP: {Code: TAY_IMP, Operation: tay, ByteSize: 1, Cycles: 2, Mode: Implied},
+	TXA_IMP: {Code: TXA_IMP, Operation: txa, ByteSize: 1, Cycles: 2, Mode: Implied},
+	TYA_IMP: {Code: TYA_IMP, Operation: tya, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	// Increments
+	INC_ZER: {Code: INC_ZER, Operation: inc, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	// INC_ZRX: {Code: INC_ZRX, Operation: inc, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
 
 	BRK_IMP: {Code: BRK_IMP, Operation: brk, ByteSize: 1, Cycles: 7, Mode: Implied},
 }

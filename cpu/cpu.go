@@ -123,6 +123,33 @@ func sty(c *Cpu, mem *Memory, mode int) {
 	mem.writeByte(uint16(addrToFill), uint8(c.YIndex))
 }
 
+func tax(c *Cpu, mem *Memory, mode int) {
+	c.XIndex = c.Accumulator
+	c.updateZeroAndNegativeFlags(c.XIndex)
+}
+
+func tay(c *Cpu, mem *Memory, mode int) {
+	c.YIndex = c.Accumulator
+	c.updateZeroAndNegativeFlags(c.YIndex)
+}
+
+func txa(c *Cpu, mem *Memory, mode int) {
+	c.Accumulator = c.XIndex
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+func tya(c *Cpu, mem *Memory, mode int) {
+	c.Accumulator = c.YIndex
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+func inc(c *Cpu, mem *Memory, mode int) {
+	addr := c.getOperandAddress(mem, mode)
+	b := mem.readByte(addr)
+	mem.writeByte(addr, b+1)
+	c.updateZeroAndNegativeFlags(Register8(b + 1))
+}
+
 func (c *Cpu) interpret(opcode uint8, memory *Memory) {
 	opc := Opcodes[opcode]
 
