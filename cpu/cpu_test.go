@@ -2000,3 +2000,182 @@ func TestBitZeroPage(t *testing.T) {
 	asrt.False(t, cpu.Status.Has(Verflow))
 	asrt.Equal(t, cpu.Cycle, Opcodes[BIT_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
 }
+
+func TestTsxImplied(t *testing.T) {
+	memory := Memory{
+		TSX_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0x10
+	cpu.StackPointer = 0x45
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.XIndex, Register8(0x45))
+
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[TSX_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestTsxImpliedZeroValue(t *testing.T) {
+	memory := Memory{
+		TSX_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0x10
+	cpu.StackPointer = 0x00
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.XIndex, Register8(0x00))
+
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[TSX_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestTxsImplied(t *testing.T) {
+	memory := Memory{
+		TXS_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0x45
+	cpu.StackPointer = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0x45))
+	asrt.Equal(t, cpu.Cycle, Opcodes[TXS_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestPhaImplied(t *testing.T) {
+	memory := Memory{
+		PHA_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x33
+	cpu.StackPointer = 0xFF
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFE))
+	asrt.Equal(t, memory[0xFF], uint8(0x33))
+	asrt.Equal(t, cpu.Cycle, Opcodes[PHA_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestPhaImpliedMultiplePush(t *testing.T) {
+	memory := Memory{
+		PHA_IMP, PHA_IMP, PHA_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x33
+	cpu.StackPointer = 0xFF
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFC))
+	asrt.Equal(t, memory[0xFF], uint8(0x33))
+	asrt.Equal(t, memory[0xFE], uint8(0x33))
+	asrt.Equal(t, memory[0xFD], uint8(0x33))
+	asrt.Equal(t, memory[0xFC], uint8(0x00))
+}
+
+func TestPhpImplied(t *testing.T) {
+	memory := Memory{
+		PHP_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFF
+	cpu.Status.Add(Decimal)
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFE))
+	asrt.Equal(t, memory[0xFF], uint8(0x09))
+	asrt.Equal(t, cpu.Cycle, Opcodes[PHP_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestPhpImpliedMultiplePush(t *testing.T) {
+	memory := Memory{
+		PHP_IMP, PHP_IMP, PHP_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFF
+	cpu.Status.Add(Decimal)
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFC))
+	asrt.Equal(t, memory[0xFF], uint8(0x09))
+	asrt.Equal(t, memory[0xFE], uint8(0x09))
+	asrt.Equal(t, memory[0xFD], uint8(0x09))
+	asrt.Equal(t, memory[0xFC], uint8(0x00))
+}
+
+func TestPlaImplied(t *testing.T) {
+	memory := Memory{
+		PLA_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFE
+	memory[0xFF] = 0x15
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
+	asrt.Equal(t, memory[0xFE], uint8(0x00))
+	asrt.Equal(t, memory[0xFF], uint8(0x15))
+	asrt.Equal(t, cpu.Accumulator, Register8(0x15))
+	asrt.Equal(t, cpu.Cycle, Opcodes[PLA_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestPlaImpliedNegative(t *testing.T) {
+	memory := Memory{
+		PLA_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFE
+	memory[0xFF] = 0xAE
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
+	asrt.Equal(t, memory[0xFE], uint8(0x00))
+	asrt.Equal(t, memory[0xFF], uint8(0xAE))
+	asrt.Equal(t, cpu.Accumulator, Register8(0xAE))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[PLA_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestPlpImplied(t *testing.T) {
+	memory := Memory{
+		PLP_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFE
+	memory[0xFF] = 0b0101_0101
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
+	asrt.Equal(t, cpu.Status, Register8(0b0101_0101))
+}
+
+func TestPlpImpliedMultipleTime(t *testing.T) {
+	memory := Memory{
+		PLP_IMP, PLP_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFD
+	memory[0xFE] = 0b0101_0101
+	memory[0xFF] = 0b1111_0000
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
+	asrt.Equal(t, cpu.Status, Register8(0b1111_0000))
+}

@@ -191,6 +191,44 @@ func bit(c *Cpu, mem *Memory, mode int) {
 	}
 }
 
+func tsx(c *Cpu, mem *Memory, mode int) {
+	c.XIndex = c.StackPointer
+	c.updateZeroAndNegativeFlags(c.XIndex)
+}
+
+func txs(c *Cpu, mem *Memory, mode int) {
+	c.StackPointer = c.XIndex
+}
+
+// TODO: may wrap the stack pointer
+func pha(c *Cpu, mem *Memory, mode int) {
+	mem.writeByte(uint16(c.StackPointer), uint8(c.Accumulator))
+
+	c.StackPointer--
+}
+
+func php(c *Cpu, mem *Memory, mode int) {
+	mem.writeByte(uint16(c.StackPointer), uint8(c.Status))
+
+	c.StackPointer--
+}
+
+// TODO: may wrap the stack pointer also
+// Should learn about the B flag
+func pla(c *Cpu, mem *Memory, mode int) {
+	c.StackPointer++
+	val := mem.readByte(uint16(c.StackPointer))
+	c.Accumulator = Register8(val)
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+// TODO: should go deeper for tests
+func plp(c *Cpu, mem *Memory, mode int) {
+	c.StackPointer++
+	val := mem.readByte(uint16(c.StackPointer))
+	c.Status = Register8(val)
+}
+
 func inc(c *Cpu, mem *Memory, mode int) {
 	addr := c.getOperandAddress(mem, mode)
 	b := mem.readByte(addr)

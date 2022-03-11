@@ -59,6 +59,13 @@ const (
 	TXA_IMP = 0x8A
 	TYA_IMP = 0x98
 
+	TSX_IMP = 0xBA
+	TXS_IMP = 0x9A
+	PHA_IMP = 0x48
+	PHP_IMP = 0x08
+	PLA_IMP = 0x68
+	PLP_IMP = 0x28
+
 	AND_IMM = 0x29
 	AND_ZER = 0x25
 	AND_ZRX = 0x35
@@ -171,6 +178,14 @@ var Opcodes = map[uint8]Opcode{
 	TAY_IMP: {Code: TAY_IMP, Operation: tay, ByteSize: 1, Cycles: 2, Mode: Implied},
 	TXA_IMP: {Code: TXA_IMP, Operation: txa, ByteSize: 1, Cycles: 2, Mode: Implied},
 	TYA_IMP: {Code: TYA_IMP, Operation: tya, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	// Stack
+	TSX_IMP: {Code: TSX_IMP, Operation: tsx, ByteSize: 1, Cycles: 2, Mode: Implied},
+	TXS_IMP: {Code: TXS_IMP, Operation: txs, ByteSize: 1, Cycles: 2, Mode: Implied},
+	PHA_IMP: {Code: PHA_IMP, Operation: pha, ByteSize: 1, Cycles: 3, Mode: Implied},
+	PHP_IMP: {Code: PHP_IMP, Operation: php, ByteSize: 1, Cycles: 3, Mode: Implied},
+	PLA_IMP: {Code: PLA_IMP, Operation: pla, ByteSize: 1, Cycles: 4, Mode: Implied},
+	PLP_IMP: {Code: PLP_IMP, Operation: plp, ByteSize: 1, Cycles: 4, Mode: Implied},
 
 	// Logical
 	AND_IMM: {Code: AND_IMM, Operation: and, ByteSize: 2, Cycles: 2, Mode: Immediate},
