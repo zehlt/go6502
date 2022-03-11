@@ -1233,3 +1233,249 @@ func TestIncZeroValue(t *testing.T) {
 	asrt.False(t, cpu.Status.Has(Negative))
 	asrt.True(t, cpu.Status.Has(Zero))
 }
+
+func TestIncZeroPageXPositiveValue(t *testing.T) {
+	memory := Memory{
+		INC_ZRX, 0x10, BRK_IMP,
+	}
+
+	memory[0x30] = 0x20
+	cpu := Cpu{}
+	cpu.XIndex = 0x20
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x30], uint8(0x21))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncZeroPageXNegativeValue(t *testing.T) {
+	memory := Memory{
+		INC_ZRX, 0x10, BRK_IMP,
+	}
+
+	memory[0x30] = 0x7F
+	cpu := Cpu{}
+	cpu.XIndex = 0x20
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x30], uint8(0x80))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncZeroPageXZeroValue(t *testing.T) {
+	memory := Memory{
+		INC_ZRX, 0x10, BRK_IMP,
+	}
+
+	memory[0x30] = 0xFF
+	cpu := Cpu{}
+	cpu.XIndex = 0x20
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x30], uint8(0x00))
+	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+}
+
+func TestIncAbsolutePositiveValue(t *testing.T) {
+	memory := Memory{
+		INC_ABS, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE10] = 0x20
+	cpu := Cpu{}
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE10], uint8(0x21))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncAbsoluteNegativeValue(t *testing.T) {
+	memory := Memory{
+		INC_ABS, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE10] = 0x7F
+	cpu := Cpu{}
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE10], uint8(0x80))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncAbsoluteZeroValue(t *testing.T) {
+	memory := Memory{
+		INC_ABS, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE10] = 0xFF
+	cpu := Cpu{}
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE10], uint8(0x00))
+	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+}
+
+func TestIncAbsoluteXPositiveValue(t *testing.T) {
+	memory := Memory{
+		INC_ABX, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE20] = 0x03
+	cpu := Cpu{}
+	cpu.XIndex = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE20], uint8(0x04))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncAbsoluteXNegativeValue(t *testing.T) {
+	memory := Memory{
+		INC_ABX, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE20] = 0x7F
+	cpu := Cpu{}
+	cpu.XIndex = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE20], uint8(0x80))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INC_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestIncAbsoluteXZeroValue(t *testing.T) {
+	memory := Memory{
+		INC_ABX, 0x10, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE20] = 0xFF
+	cpu := Cpu{}
+	cpu.XIndex = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE20], uint8(0x00))
+	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+}
+
+func TestInxImpliedPositiveValue(t *testing.T) {
+	memory := Memory{
+		INX_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0x12
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.XIndex, Register8(0x13))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INX_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestInxImpliedNegativeValue(t *testing.T) {
+	memory := Memory{
+		INX_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0x7F
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.XIndex, Register8(0x80))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INX_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestInxImpliedZeroValue(t *testing.T) {
+	memory := Memory{
+		INX_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.XIndex = 0xFF
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.XIndex, Register8(0x00))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INX_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestInyImpliedPositiveValue(t *testing.T) {
+	memory := Memory{
+		INY_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.YIndex = 0x12
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.YIndex, Register8(0x13))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INY_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestInyImpliedNegativeValue(t *testing.T) {
+	memory := Memory{
+		INY_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.YIndex = 0x7F
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.YIndex, Register8(0x80))
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INY_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestInyImpliedZeroValue(t *testing.T) {
+	memory := Memory{
+		INY_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.YIndex = 0xFF
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.YIndex, Register8(0x00))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[INY_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestDecImpliedPositiveValue(t *testing.T) {
+	memory := Memory{
+		DEC_ZER, 0xAE, BRK_IMP,
+	}
+
+	memory[0xAE] = 0x15
+	cpu := Cpu{}
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0xAE], uint8(0x14))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.Equal(t, cpu.Cycle, Opcodes[DEC_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
+}

@@ -150,6 +150,23 @@ func inc(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(Register8(b + 1))
 }
 
+func inx(c *Cpu, mem *Memory, mode int) {
+	c.XIndex++
+	c.updateZeroAndNegativeFlags(c.XIndex)
+}
+
+func iny(c *Cpu, mem *Memory, mode int) {
+	c.YIndex++
+	c.updateZeroAndNegativeFlags(c.YIndex)
+}
+
+func dec(c *Cpu, mem *Memory, mode int) {
+	addr := c.getOperandAddress(mem, mode)
+	b := mem.readByte(addr)
+	mem.writeByte(addr, b-1)
+	c.updateZeroAndNegativeFlags(Register8(b - 1))
+}
+
 func (c *Cpu) interpret(opcode uint8, memory *Memory) {
 	opc := Opcodes[opcode]
 
