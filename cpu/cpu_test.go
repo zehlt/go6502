@@ -1962,3 +1962,41 @@ func TestAorImmediateNegative(t *testing.T) {
 	asrt.Equal(t, cpu.Cycle, Opcodes[ORA_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
 	asrt.True(t, cpu.Status.Has(Negative))
 }
+
+func TestBitZeroPageTwoLastBitSet(t *testing.T) {
+	memory := Memory{
+		BIT_ZER, 0x30, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x30] = 0xF0
+	cpu.Accumulator = 0x06
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x06))
+	asrt.Equal(t, memory[0x30], uint8(0xF0))
+
+	asrt.True(t, cpu.Status.Has(Negative))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Verflow))
+	asrt.Equal(t, cpu.Cycle, Opcodes[BIT_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestBitZeroPage(t *testing.T) {
+	memory := Memory{
+		BIT_ZER, 0x50, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x50] = 0x07
+	cpu.Accumulator = 0x06
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x06))
+	asrt.Equal(t, memory[0x50], uint8(0x07))
+
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Verflow))
+	asrt.Equal(t, cpu.Cycle, Opcodes[BIT_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
+}

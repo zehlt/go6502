@@ -86,6 +86,9 @@ const (
 	ORA_IDX = 0x01
 	ORA_IDY = 0x11
 
+	BIT_ZER = 0x24
+	BIT_ABS = 0x2C
+
 	INC_ZER = 0xE6
 	INC_ZRX = 0xF6
 	INC_ABS = 0xEE
@@ -196,6 +199,9 @@ var Opcodes = map[uint8]Opcode{
 	ORA_ABY: {Code: ORA_ABY, Operation: aor, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
 	ORA_IDX: {Code: ORA_IDX, Operation: aor, ByteSize: 2, Cycles: 6, Mode: IndirectX},
 	ORA_IDY: {Code: ORA_IDY, Operation: aor, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	BIT_ZER: {Code: BIT_ZER, Operation: bit, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	BIT_ABS: {Code: BIT_ABS, Operation: bit, ByteSize: 3, Cycles: 4, Mode: Absolute},
 
 	// Increments
 	INC_ZER: {Code: INC_ZER, Operation: inc, ByteSize: 2, Cycles: 5, Mode: ZeroPage},

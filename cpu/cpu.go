@@ -165,6 +165,32 @@ func aor(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(c.Accumulator)
 }
 
+// TODO: may need some verif
+func bit(c *Cpu, mem *Memory, mode int) {
+	operand := mem.readByte(c.getOperandAddress(mem, mode))
+
+	aCopy := c.Accumulator
+	aCopy &= Register8(operand)
+
+	if aCopy == 0 {
+		c.Status.Add(Zero)
+	} else {
+		c.Status.Remove(Zero)
+	}
+
+	if operand&Negative == 0 {
+		c.Status.Remove(Negative)
+	} else {
+		c.Status.Add(Negative)
+	}
+
+	if operand&Verflow == 0 {
+		c.Status.Remove(Verflow)
+	} else {
+		c.Status.Add(Verflow)
+	}
+}
+
 func inc(c *Cpu, mem *Memory, mode int) {
 	addr := c.getOperandAddress(mem, mode)
 	b := mem.readByte(addr)
