@@ -167,6 +167,16 @@ func dec(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(Register8(b - 1))
 }
 
+func dex(c *Cpu, mem *Memory, mode int) {
+	c.XIndex--
+	c.updateZeroAndNegativeFlags(c.XIndex)
+}
+
+func dey(c *Cpu, mem *Memory, mode int) {
+	c.YIndex--
+	c.updateZeroAndNegativeFlags(c.YIndex)
+}
+
 func (c *Cpu) interpret(opcode uint8, memory *Memory) {
 	opc := Opcodes[opcode]
 

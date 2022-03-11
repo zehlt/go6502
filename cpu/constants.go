@@ -67,6 +67,11 @@ const (
 	INY_IMP = 0xC8
 
 	DEC_ZER = 0xC6
+	DEC_ZRX = 0xD6
+	DEC_ABS = 0xCE
+	DEC_ABX = 0xDE
+	DEX_IMP = 0xCA
+	DEY_IMP = 0x88
 
 	BRK_IMP = 0x00
 
@@ -138,6 +143,11 @@ var Opcodes = map[uint8]Opcode{
 
 	// Decrements
 	DEC_ZER: {Code: DEC_ZER, Operation: dec, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	DEC_ZRX: {Code: DEC_ZRX, Operation: dec, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
+	DEC_ABS: {Code: DEC_ABS, Operation: dec, ByteSize: 3, Cycles: 6, Mode: Absolute},
+	DEC_ABX: {Code: DEC_ABX, Operation: dec, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
+	DEX_IMP: {Code: DEX_IMP, Operation: dex, ByteSize: 1, Cycles: 2, Mode: Implied},
+	DEY_IMP: {Code: DEY_IMP, Operation: dey, ByteSize: 1, Cycles: 2, Mode: Implied},
 
 	BRK_IMP: {Code: BRK_IMP, Operation: brk, ByteSize: 1, Cycles: 7, Mode: Implied},
 }
