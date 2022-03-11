@@ -1740,3 +1740,127 @@ func TestDeyImpliedZeroValue(t *testing.T) {
 	asrt.True(t, cpu.Status.Has(Zero))
 	asrt.Equal(t, cpu.Cycle, Opcodes[DEY_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
 }
+
+func TestClcImplied(t *testing.T) {
+	memory := Memory{
+		CLC_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Carry)
+	asrt.True(t, cpu.Status.Has(Carry))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Carry))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestClcImpliedWithOtherFlagSet(t *testing.T) {
+	memory := Memory{
+		CLC_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Carry)
+	cpu.Status.Add(Negative)
+	cpu.Status.Add(Zero)
+	asrt.True(t, cpu.Status.Has(Carry))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Carry))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestCldImplied(t *testing.T) {
+	memory := Memory{
+		CLD_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Decimal)
+	asrt.True(t, cpu.Status.Has(Decimal))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Decimal))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLD_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestCldImpliedWithOtherFlagSet(t *testing.T) {
+	memory := Memory{
+		CLD_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Decimal)
+	cpu.Status.Add(Negative)
+	cpu.Status.Add(Zero)
+	asrt.True(t, cpu.Status.Has(Decimal))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Decimal))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLD_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestCliImplied(t *testing.T) {
+	memory := Memory{
+		CLI_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Interrupt)
+	asrt.True(t, cpu.Status.Has(Interrupt))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Interrupt))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLI_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestClvImplied(t *testing.T) {
+	memory := Memory{
+		CLV_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Status.Add(Verflow)
+	asrt.True(t, cpu.Status.Has(Verflow))
+	cpu.Run(&memory)
+	asrt.False(t, cpu.Status.Has(Verflow))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[CLV_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestSecImplied(t *testing.T) {
+	memory := Memory{
+		SEC_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Run(&memory)
+	asrt.True(t, cpu.Status.Has(Carry))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[SEC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestSedImplied(t *testing.T) {
+	memory := Memory{
+		SED_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Run(&memory)
+	asrt.True(t, cpu.Status.Has(Decimal))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[SED_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestSeiImplied(t *testing.T) {
+	memory := Memory{
+		SEI_IMP, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Run(&memory)
+	asrt.True(t, cpu.Status.Has(Interrupt))
+
+	asrt.Equal(t, cpu.Cycle, Opcodes[SEI_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
+}

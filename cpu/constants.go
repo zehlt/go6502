@@ -73,6 +73,15 @@ const (
 	DEX_IMP = 0xCA
 	DEY_IMP = 0x88
 
+	CLC_IMP = 0x18
+	CLD_IMP = 0xD8
+	CLI_IMP = 0x58
+	CLV_IMP = 0xB8
+
+	SEC_IMP = 0x38
+	SED_IMP = 0xF8
+	SEI_IMP = 0x78
+
 	BRK_IMP = 0x00
 
 	OTHER = 0xFF
@@ -148,6 +157,16 @@ var Opcodes = map[uint8]Opcode{
 	DEC_ABX: {Code: DEC_ABX, Operation: dec, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
 	DEX_IMP: {Code: DEX_IMP, Operation: dex, ByteSize: 1, Cycles: 2, Mode: Implied},
 	DEY_IMP: {Code: DEY_IMP, Operation: dey, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	// Status Flag Changes
+	CLC_IMP: {Code: CLC_IMP, Operation: clc, ByteSize: 1, Cycles: 2, Mode: Implied},
+	CLD_IMP: {Code: CLD_IMP, Operation: cld, ByteSize: 1, Cycles: 2, Mode: Implied},
+	CLI_IMP: {Code: CLI_IMP, Operation: cli, ByteSize: 1, Cycles: 2, Mode: Implied},
+	CLV_IMP: {Code: CLV_IMP, Operation: clv, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	SEC_IMP: {Code: SEC_IMP, Operation: sec, ByteSize: 1, Cycles: 2, Mode: Implied},
+	SED_IMP: {Code: SED_IMP, Operation: sed, ByteSize: 1, Cycles: 2, Mode: Implied},
+	SEI_IMP: {Code: SEI_IMP, Operation: sei, ByteSize: 1, Cycles: 2, Mode: Implied},
 
 	BRK_IMP: {Code: BRK_IMP, Operation: brk, ByteSize: 1, Cycles: 7, Mode: Implied},
 }

@@ -177,6 +177,34 @@ func dey(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(c.YIndex)
 }
 
+func clc(c *Cpu, mem *Memory, mode int) {
+	c.Status.Remove(Carry)
+}
+
+func cld(c *Cpu, mem *Memory, mode int) {
+	c.Status.Remove(Decimal)
+}
+
+func cli(c *Cpu, mem *Memory, mode int) {
+	c.Status.Remove(Interrupt)
+}
+
+func clv(c *Cpu, mem *Memory, mode int) {
+	c.Status.Remove(Verflow)
+}
+
+func sec(c *Cpu, mem *Memory, mode int) {
+	c.Status.Add(Carry)
+}
+
+func sed(c *Cpu, mem *Memory, mode int) {
+	c.Status.Add(Decimal)
+}
+
+func sei(c *Cpu, mem *Memory, mode int) {
+	c.Status.Add(Interrupt)
+}
+
 func (c *Cpu) interpret(opcode uint8, memory *Memory) {
 	opc := Opcodes[opcode]
 
