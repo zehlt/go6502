@@ -143,6 +143,28 @@ func tya(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(c.Accumulator)
 }
 
+// TODO: Maybe add tests for other mods
+func and(c *Cpu, mem *Memory, mode int) {
+	operand := mem.readByte(c.getOperandAddress(mem, mode))
+	c.Accumulator &= Register8(operand)
+
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+func eor(c *Cpu, mem *Memory, mode int) {
+	operand := mem.readByte(c.getOperandAddress(mem, mode))
+	c.Accumulator ^= Register8(operand)
+
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+func aor(c *Cpu, mem *Memory, mode int) {
+	operand := mem.readByte(c.getOperandAddress(mem, mode))
+	c.Accumulator |= Register8(operand)
+
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
 func inc(c *Cpu, mem *Memory, mode int) {
 	addr := c.getOperandAddress(mem, mode)
 	b := mem.readByte(addr)

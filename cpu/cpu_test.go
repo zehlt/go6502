@@ -1864,3 +1864,101 @@ func TestSeiImplied(t *testing.T) {
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[SEI_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
 }
+
+func TestAndImmediate(t *testing.T) {
+	memory := Memory{
+		AND_IMM, 0xF0, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xF5
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xF0))
+	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestAndImmediateZero(t *testing.T) {
+	memory := Memory{
+		AND_IMM, 0x08, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xD1
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
+	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestAndImmediateNegative(t *testing.T) {
+	memory := Memory{
+		AND_IMM, 0xD9, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xD1
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xD1))
+	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Negative))
+}
+
+func TestEorImmediate(t *testing.T) {
+	memory := Memory{
+		EOR_IMM, 0xF0, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xF5
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x05))
+	asrt.Equal(t, cpu.Cycle, Opcodes[EOR_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestEorImmediateZero(t *testing.T) {
+	memory := Memory{
+		EOR_IMM, 0x45, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x45
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
+	asrt.Equal(t, cpu.Cycle, Opcodes[EOR_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+	asrt.True(t, cpu.Status.Has(Zero))
+}
+
+func TestAorImmediate(t *testing.T) {
+	memory := Memory{
+		ORA_IMM, 0x10, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x05
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x15))
+	asrt.False(t, cpu.Status.Has(Negative))
+	asrt.Equal(t, cpu.Cycle, Opcodes[ORA_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+}
+
+func TestAorImmediateNegative(t *testing.T) {
+	memory := Memory{
+		ORA_IMM, 0xF0, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x05
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xF5))
+	asrt.Equal(t, cpu.Cycle, Opcodes[ORA_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
+	asrt.True(t, cpu.Status.Has(Negative))
+}

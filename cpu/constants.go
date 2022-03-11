@@ -59,6 +59,33 @@ const (
 	TXA_IMP = 0x8A
 	TYA_IMP = 0x98
 
+	AND_IMM = 0x29
+	AND_ZER = 0x25
+	AND_ZRX = 0x35
+	AND_ABS = 0x2D
+	AND_ABX = 0x3D
+	AND_ABY = 0x39
+	AND_IDX = 0x21
+	AND_IDY = 0x31
+
+	EOR_IMM = 0x49
+	EOR_ZER = 0x45
+	EOR_ZRX = 0x55
+	EOR_ABS = 0x4D
+	EOR_ABX = 0x5D
+	EOR_ABY = 0x59
+	EOR_IDX = 0x41
+	EOR_IDY = 0x51
+
+	ORA_IMM = 0x09
+	ORA_ZER = 0x05
+	ORA_ZRX = 0x15
+	ORA_ABS = 0x0D
+	ORA_ABX = 0x1D
+	ORA_ABY = 0x19
+	ORA_IDX = 0x01
+	ORA_IDY = 0x11
+
 	INC_ZER = 0xE6
 	INC_ZRX = 0xF6
 	INC_ABS = 0xEE
@@ -141,6 +168,34 @@ var Opcodes = map[uint8]Opcode{
 	TAY_IMP: {Code: TAY_IMP, Operation: tay, ByteSize: 1, Cycles: 2, Mode: Implied},
 	TXA_IMP: {Code: TXA_IMP, Operation: txa, ByteSize: 1, Cycles: 2, Mode: Implied},
 	TYA_IMP: {Code: TYA_IMP, Operation: tya, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	// Logical
+	AND_IMM: {Code: AND_IMM, Operation: and, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	AND_ZER: {Code: AND_ZER, Operation: and, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	AND_ZRX: {Code: AND_ZRX, Operation: and, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	AND_ABS: {Code: AND_ABS, Operation: and, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	AND_ABX: {Code: AND_ABX, Operation: and, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	AND_ABY: {Code: AND_ABY, Operation: and, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	AND_IDX: {Code: AND_IDX, Operation: and, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	AND_IDY: {Code: AND_IDY, Operation: and, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	EOR_IMM: {Code: EOR_IMM, Operation: eor, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	EOR_ZER: {Code: EOR_ZER, Operation: eor, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	EOR_ZRX: {Code: EOR_ZRX, Operation: eor, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	EOR_ABS: {Code: EOR_ABS, Operation: eor, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	EOR_ABX: {Code: EOR_ABX, Operation: eor, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	EOR_ABY: {Code: EOR_ABY, Operation: eor, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	EOR_IDX: {Code: EOR_IDX, Operation: eor, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	EOR_IDY: {Code: EOR_IDY, Operation: eor, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	ORA_IMM: {Code: ORA_IMM, Operation: aor, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	ORA_ZER: {Code: ORA_ZER, Operation: aor, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	ORA_ZRX: {Code: ORA_ZRX, Operation: aor, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	ORA_ABS: {Code: ORA_ABS, Operation: aor, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	ORA_ABX: {Code: ORA_ABX, Operation: aor, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	ORA_ABY: {Code: ORA_ABY, Operation: aor, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	ORA_IDX: {Code: ORA_IDX, Operation: aor, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	ORA_IDY: {Code: ORA_IDY, Operation: aor, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
 
 	// Increments
 	INC_ZER: {Code: INC_ZER, Operation: inc, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
