@@ -263,6 +263,112 @@ func dey(c *Cpu, mem *Memory, mode int) {
 	c.updateZeroAndNegativeFlags(c.YIndex)
 }
 
+func rol(c *Cpu, mem *Memory, mode int) {
+	if mode == Accumulator {
+		isOldBit7Set := c.Accumulator&0b1000_0000 != 0
+		c.Accumulator <<= 1
+		c.Accumulator.Set(0, c.Status.Has(Carry))
+		c.Status.Set(0, isOldBit7Set)
+		c.updateZeroAndNegativeFlags(c.Accumulator)
+	} else {
+		addr := c.getOperandAddress(mem, mode)
+		value := mem.readByte(addr)
+
+		isOldBit7Set := value&0b1000_0000 != 0
+		value <<= 1
+		if c.Status.Has(Carry) {
+			value |= 0b0000_0001
+		} else {
+			value &^= 0b0000_0001
+		}
+		c.Status.Set(0, isOldBit7Set)
+
+		mem.writeByte(addr, value)
+		c.updateZeroAndNegativeFlags(Register8(value))
+	}
+}
+
+// TODO: Maybe adding more tests
+func ror(c *Cpu, mem *Memory, mode int) {
+	if mode == Accumulator {
+		isOldBit0Set := c.Accumulator&0b0000_0001 != 0
+		c.Accumulator >>= 1
+		c.Accumulator.Set(7, c.Status.Has(Carry))
+		c.Status.Set(0, isOldBit0Set)
+		c.updateZeroAndNegativeFlags(c.Accumulator)
+	} else {
+		addr := c.getOperandAddress(mem, mode)
+		value := mem.readByte(addr)
+
+		isOldBit0Set := value&0b0000_0001 != 0
+		value >>= 1
+
+		if c.Status.Has(Carry) {
+			value |= 0b1000_0000
+		} else {
+			value &^= 0b1000_0000
+		}
+		c.Status.Set(0, isOldBit0Set)
+
+		mem.writeByte(addr, value)
+		c.updateZeroAndNegativeFlags(Register8(value))
+	}
+}
+
+func lsr(c *Cpu, mem *Memory, mode int) {
+	if mode == Accumulator {
+		if c.Accumulator.Has(0b0000_0001) {
+			c.Status.Add(Carry)
+		} else {
+			c.Status.Remove(Carry)
+		}
+
+		c.Accumulator >>= 1
+		c.updateZeroAndNegativeFlags(c.Accumulator)
+	} else {
+		addr := c.getOperandAddress(mem, mode)
+		value := mem.readByte(addr)
+
+		if value&0b0000_0001 == 0 {
+			c.Status.Remove(Carry)
+		} else {
+			c.Status.Add(Carry)
+		}
+
+		value >>= 1
+
+		mem.writeByte(addr, value)
+		c.updateZeroAndNegativeFlags(Register8(value))
+	}
+}
+
+func asl(c *Cpu, mem *Memory, mode int) {
+	if mode == Accumulator {
+		if c.Accumulator.Has(0b1000_0000) {
+			c.Status.Add(Carry)
+		} else {
+			c.Status.Remove(Carry)
+		}
+
+		c.Accumulator <<= 1
+		c.updateZeroAndNegativeFlags(c.Accumulator)
+	} else {
+		addr := c.getOperandAddress(mem, mode)
+		value := mem.readByte(addr)
+
+		if value&Negative == 0 {
+			c.Status.Remove(Carry)
+		} else {
+			c.Status.Add(Carry)
+		}
+
+		value <<= 1
+
+		mem.writeByte(addr, value)
+		c.updateZeroAndNegativeFlags(Register8(value))
+	}
+}
+
 func clc(c *Cpu, mem *Memory, mode int) {
 	c.Status.Remove(Carry)
 }

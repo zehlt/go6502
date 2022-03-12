@@ -2179,3 +2179,308 @@ func TestPlpImpliedMultipleTime(t *testing.T) {
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
 	asrt.Equal(t, cpu.Status, Register8(0b1111_0000))
 }
+
+// Need to add the negative
+func TestAslAccumulatorWithCarryAndZero(t *testing.T) {
+	memory := Memory{
+		ASL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x80
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestAslAccumulatorWithCarryAndPositiveValue(t *testing.T) {
+	memory := Memory{
+		ASL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x85
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x0A))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestAslAccumulatorWithNegativeResult(t *testing.T) {
+	memory := Memory{
+		ASL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x50
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xA0))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Negative))
+}
+
+func TestAslZeroPageCarryAndZero(t *testing.T) {
+	memory := Memory{
+		ASL_ZER, 0x25, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x25] = 0x80
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x25], uint8(0x00))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestAslZeroPageNegative(t *testing.T) {
+	memory := Memory{
+		ASL_ZER, 0x25, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x25] = 0x50
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x25], uint8(0xA0))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Negative))
+}
+
+func TestAslZeroPageCarry(t *testing.T) {
+	memory := Memory{
+		ASL_ZER, 0x25, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x25] = 0x82
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x25], uint8(0x04))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestLsrAccumulatorPositiveValue(t *testing.T) {
+	memory := Memory{
+		LSR_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x04
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x02))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestLsrAccumulatorZeroAndCarry(t *testing.T) {
+	memory := Memory{
+		LSR_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x01
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestLsrAccumulatorCarry(t *testing.T) {
+	memory := Memory{
+		LSR_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x05
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x02))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestLsrZeroPageCarry(t *testing.T) {
+	memory := Memory{
+		LSR_ZER, 0x33, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x33] = 0xDF
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x33], uint8(0x6f))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolAccumulatorPositive(t *testing.T) {
+	memory := Memory{
+		ROL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x20))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolAccumulatorNegativeAndCarry(t *testing.T) {
+	memory := Memory{
+		ROL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xDE
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xBC))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Negative))
+}
+
+func TestRolAccumulatorZero(t *testing.T) {
+	memory := Memory{
+		ROL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x80
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolAccumulatorWithPreviousCarry(t *testing.T) {
+	memory := Memory{
+		ROL_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x20
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x41))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolZeroPageCarryAndZero(t *testing.T) {
+	memory := Memory{
+		ROL_ZER, 0x33, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x33] = 0x80
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x33], uint8(0x00))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.True(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolZeroPageCarryAndZeroWithPreviousCarry(t *testing.T) {
+	memory := Memory{
+		ROL_ZER, 0x33, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x33] = 0x80
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x33], uint8(0x01))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRolZeroPageCarryPositiveValue(t *testing.T) {
+	memory := Memory{
+		ROL_ZER, 0x33, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x33] = 0x10
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x33], uint8(0x20))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRorAccumulatorPositiveValue(t *testing.T) {
+	memory := Memory{
+		ROR_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x08
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x04))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRorAccumulatorPositiveWithPreviousCarry(t *testing.T) {
+	memory := Memory{
+		ROR_ACC, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x08
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0x84))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.True(t, cpu.Status.Has(Negative))
+}
+
+func TestRorZeroPageCarry(t *testing.T) {
+	memory := Memory{
+		ROR_ZER, 0x33, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	memory[0x33] = 0xB5
+	cpu.Run(&memory)
+
+	asrt.Equal(t, memory[0x33], uint8(0x5A))
+	asrt.True(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}

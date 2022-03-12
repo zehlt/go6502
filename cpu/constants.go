@@ -14,6 +14,7 @@ const (
 	IndirectX
 	IndirectY
 	IndirectY1
+	Accumulator
 )
 
 const (
@@ -109,6 +110,30 @@ const (
 	DEC_ABX = 0xDE
 	DEX_IMP = 0xCA
 	DEY_IMP = 0x88
+
+	ASL_ACC = 0x0A
+	ASL_ZER = 0x06
+	ASL_ZRX = 0x16
+	ASL_ABS = 0x0E
+	ASL_ABX = 0x1E
+
+	LSR_ACC = 0x4A
+	LSR_ZER = 0x46
+	LSR_ZRX = 0x56
+	LSR_ABS = 0x4E
+	LSR_ABX = 0x5E
+
+	ROL_ACC = 0x2A
+	ROL_ZER = 0x26
+	ROL_ZRX = 0x36
+	ROL_ABS = 0x2E
+	ROL_ABX = 0x3E
+
+	ROR_ACC = 0x6A
+	ROR_ZER = 0x66
+	ROR_ZRX = 0x76
+	ROR_ABS = 0x6E
+	ROR_ABX = 0x7E
 
 	CLC_IMP = 0x18
 	CLD_IMP = 0xD8
@@ -233,6 +258,31 @@ var Opcodes = map[uint8]Opcode{
 	DEC_ABX: {Code: DEC_ABX, Operation: dec, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
 	DEX_IMP: {Code: DEX_IMP, Operation: dex, ByteSize: 1, Cycles: 2, Mode: Implied},
 	DEY_IMP: {Code: DEY_IMP, Operation: dey, ByteSize: 1, Cycles: 2, Mode: Implied},
+
+	// Shifts
+	ASL_ACC: {Code: ASL_ACC, Operation: asl, ByteSize: 1, Cycles: 2, Mode: Accumulator},
+	ASL_ZER: {Code: ASL_ZER, Operation: asl, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	ASL_ZRX: {Code: ASL_ZRX, Operation: asl, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
+	ASL_ABS: {Code: ASL_ABS, Operation: asl, ByteSize: 3, Cycles: 6, Mode: Absolute},
+	ASL_ABX: {Code: ASL_ABX, Operation: asl, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
+
+	LSR_ACC: {Code: LSR_ACC, Operation: lsr, ByteSize: 1, Cycles: 2, Mode: Accumulator},
+	LSR_ZER: {Code: LSR_ZER, Operation: lsr, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	LSR_ZRX: {Code: LSR_ZRX, Operation: lsr, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
+	LSR_ABS: {Code: LSR_ABS, Operation: lsr, ByteSize: 3, Cycles: 6, Mode: Absolute},
+	LSR_ABX: {Code: LSR_ABX, Operation: lsr, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
+
+	ROL_ACC: {Code: ROL_ACC, Operation: rol, ByteSize: 1, Cycles: 2, Mode: Accumulator},
+	ROL_ZER: {Code: ROL_ZER, Operation: rol, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	ROL_ZRX: {Code: ROL_ZRX, Operation: rol, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
+	ROL_ABS: {Code: ROL_ABS, Operation: rol, ByteSize: 3, Cycles: 6, Mode: Absolute},
+	ROL_ABX: {Code: ROL_ABX, Operation: rol, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
+
+	ROR_ACC: {Code: ROR_ACC, Operation: ror, ByteSize: 1, Cycles: 2, Mode: Accumulator},
+	ROR_ZER: {Code: ROR_ZER, Operation: ror, ByteSize: 2, Cycles: 5, Mode: ZeroPage},
+	ROR_ZRX: {Code: ROR_ZRX, Operation: ror, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
+	ROR_ABS: {Code: ROR_ABS, Operation: ror, ByteSize: 3, Cycles: 6, Mode: Absolute},
+	ROR_ABX: {Code: ROR_ABX, Operation: ror, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
 
 	// Status Flag Changes
 	CLC_IMP: {Code: CLC_IMP, Operation: clc, ByteSize: 1, Cycles: 2, Mode: Implied},
