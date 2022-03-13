@@ -97,6 +97,15 @@ const (
 	BIT_ZER = 0x24
 	BIT_ABS = 0x2C
 
+	ADC_IMM = 0x69
+	ADC_ZER = 0x65
+	ADC_ZRX = 0x75
+	ADC_ABS = 0x6D
+	ADC_ABX = 0x7D
+	ADC_ABY = 0x79
+	ADC_IDX = 0x61
+	ADC_IDY = 0x71
+
 	INC_ZER = 0xE6
 	INC_ZRX = 0xF6
 	INC_ABS = 0xEE
@@ -242,6 +251,16 @@ var Opcodes = map[uint8]Opcode{
 
 	BIT_ZER: {Code: BIT_ZER, Operation: bit, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
 	BIT_ABS: {Code: BIT_ABS, Operation: bit, ByteSize: 3, Cycles: 4, Mode: Absolute},
+
+	// Arithmetic
+	ADC_IMM: {Code: ADC_IMM, Operation: adc, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	ADC_ZER: {Code: ADC_ZER, Operation: adc, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	ADC_ZRX: {Code: ADC_ZRX, Operation: adc, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	ADC_ABS: {Code: ADC_ABS, Operation: adc, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	ADC_ABX: {Code: ADC_ABX, Operation: adc, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	ADC_ABY: {Code: ADC_ABY, Operation: adc, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	ADC_IDX: {Code: ADC_IDX, Operation: adc, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	ADC_IDY: {Code: ADC_IDY, Operation: adc, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
 
 	// Increments
 	INC_ZER: {Code: INC_ZER, Operation: inc, ByteSize: 2, Cycles: 5, Mode: ZeroPage},

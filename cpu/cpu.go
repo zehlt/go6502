@@ -369,6 +369,13 @@ func asl(c *Cpu, mem *Memory, mode int) {
 	}
 }
 
+// TODO: need to implement it
+// TODO: check if the carry should be add before
+// TODO: adding decilam addition later
+func adc(c *Cpu, mem *Memory, mode int) {
+	//c.Status.Remove(Carry)
+}
+
 func clc(c *Cpu, mem *Memory, mode int) {
 	c.Status.Remove(Carry)
 }
