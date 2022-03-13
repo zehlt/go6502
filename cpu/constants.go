@@ -11,6 +11,7 @@ const (
 	AbsoluteX1
 	AbsoluteY
 	AbsoluteY1
+	Indirect
 	IndirectX
 	IndirectY
 	IndirectY1
@@ -143,6 +144,12 @@ const (
 	ROR_ZRX = 0x76
 	ROR_ABS = 0x6E
 	ROR_ABX = 0x7E
+
+	JMP_ABS = 0x4C
+	JMP_IND = 0x6C
+
+	JSR_ABS = 0x20
+	RTS_IMP = 0x60
 
 	CLC_IMP = 0x18
 	CLD_IMP = 0xD8
@@ -302,6 +309,14 @@ var Opcodes = map[uint8]Opcode{
 	ROR_ZRX: {Code: ROR_ZRX, Operation: ror, ByteSize: 2, Cycles: 6, Mode: ZeroPageX},
 	ROR_ABS: {Code: ROR_ABS, Operation: ror, ByteSize: 3, Cycles: 6, Mode: Absolute},
 	ROR_ABX: {Code: ROR_ABX, Operation: ror, ByteSize: 3, Cycles: 7, Mode: AbsoluteX},
+
+	// Jumps
+	/* byte size set to 1 because to not change the prg counter after jump */
+	JMP_ABS: {Code: JMP_ABS, Operation: jmp, ByteSize: 1, Cycles: 3, Mode: Absolute},
+	JMP_IND: {Code: JMP_IND, Operation: jmp, ByteSize: 1, Cycles: 5, Mode: Indirect},
+
+	JSR_ABS: {Code: JSR_ABS, Operation: jsr, ByteSize: 1, Cycles: 6, Mode: Absolute},
+	RTS_IMP: {Code: RTS_IMP, Operation: rts, ByteSize: 1, Cycles: 6, Mode: Implied},
 
 	// Status Flag Changes
 	CLC_IMP: {Code: CLC_IMP, Operation: clc, ByteSize: 1, Cycles: 2, Mode: Implied},

@@ -65,6 +65,10 @@ func (c *Cpu) getOperandAddress(mem *Memory, mode int) uint16 {
 		res := operandAddr + uint16(c.YIndex)
 		incrementWhenPageCrossed(c, operandAddr, res)
 		return res
+	case Indirect:
+		operand := mem.readWord(uint16(c.ProgramCounter))
+		indirectValue := mem.readWord(operand)
+		return indirectValue
 	case IndirectX:
 		operand := mem.readByte(uint16(c.ProgramCounter))
 		operand += uint8(c.XIndex)
@@ -376,6 +380,31 @@ func adc(c *Cpu, mem *Memory, mode int) {
 	//c.Status.Remove(Carry)
 }
 
+func jsr(c *Cpu, mem *Memory, mode int) {
+	operand := c.getOperandAddress(mem, mode)
+	mem.writeByte(uint16(c.StackPointer), uint8((c.ProgramCounter+2)>>8))
+	mem.writeByte(uint16(c.StackPointer-1), uint8(c.ProgramCounter+2))
+	c.StackPointer -= 2
+	c.ProgramCounter = Register16(operand)
+}
+
+// check if the order of operation is right
+func rts(c *Cpu, mem *Memory, mode int) {
+	c.StackPointer++
+	var lo uint16 = uint16(mem.readByte(uint16(c.StackPointer)))
+	c.StackPointer++
+	var hi uint16 = uint16(mem.readByte(uint16(c.StackPointer)))
+	lo++
+
+	c.ProgramCounter = Register16(((hi << 8) | lo))
+}
+
+// TODO: check if the increment doesn't happen in the same instruction cycle
+func jmp(c *Cpu, mem *Memory, mode int) {
+	operand := c.getOperandAddress(mem, mode)
+	c.ProgramCounter = Register16(operand)
+}
+
 func clc(c *Cpu, mem *Memory, mode int) {
 	c.Status.Remove(Carry)
 }
@@ -423,14 +452,20 @@ func (c *Cpu) Reset(mem *Memory) {
 	c.ProgramCounter = Register16(mem.readWord(0xFFFC))
 }
 
+func (c *Cpu) Step(mem *Memory) bool {
+	opcode := mem.readByte(uint16(c.ProgramCounter))
+	c.ProgramCounter++
+
+	c.interpret(opcode, mem)
+
+	return opcode == BRK_IMP
+}
+
 func (c *Cpu) Run(memory *Memory) {
 	for {
-		opcode := memory.readByte(uint16(c.ProgramCounter))
-		c.ProgramCounter++
+		shouldExit := c.Step(memory)
 
-		c.interpret(opcode, memory)
-
-		if opcode == BRK_IMP {
+		if shouldExit {
 			break
 		}
 	}

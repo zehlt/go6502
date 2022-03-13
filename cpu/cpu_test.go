@@ -2484,3 +2484,71 @@ func TestRorZeroPageCarry(t *testing.T) {
 	asrt.False(t, cpu.Status.Has(Zero))
 	asrt.False(t, cpu.Status.Has(Negative))
 }
+
+func TestJmpAbsolute(t *testing.T) {
+	memory := Memory{
+		JMP_ABS, 0x00, 0x06,
+	}
+
+	cpu := Cpu{}
+	memory[0x0600] = BRK_IMP
+	cpu.Step(&memory)
+
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0600))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestJmpIndirect(t *testing.T) {
+	memory := Memory{
+		JMP_IND, 0x52, 0x01,
+	}
+
+	cpu := Cpu{}
+	memory[0x0152] = 0x01
+	memory[0x0153] = 0x04
+	cpu.Step(&memory)
+
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0401))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestJsrAbsolute(t *testing.T) {
+	memory := Memory{
+		JSR_ABS, 0x0f, 0x06,
+	}
+
+	cpu := Cpu{}
+	memory[0x060f] = BRK_IMP
+	cpu.StackPointer = 0xff
+	cpu.Step(&memory)
+
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x060f))
+	asrt.Equal(t, cpu.StackPointer, Register8(0xfd))
+	asrt.Equal(t, memory[0xff], uint8(0x00))
+	asrt.Equal(t, memory[0xfe], uint8(0x03))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
+
+func TestRtsImplied(t *testing.T) {
+	memory := Memory{
+		RTS_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.StackPointer = 0xFD
+	memory[0xFF] = 0x00
+	memory[0xFE] = 0x03
+	cpu.Step(&memory)
+
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0004))
+	asrt.Equal(t, cpu.StackPointer, Register8(0xff))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.False(t, cpu.Status.Has(Zero))
+	asrt.False(t, cpu.Status.Has(Negative))
+}
