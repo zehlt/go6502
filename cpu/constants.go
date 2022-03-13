@@ -108,6 +108,32 @@ const (
 	ADC_IDX = 0x61
 	ADC_IDY = 0x71
 
+	SBC_IMM = 0xE9
+	SBC_ZER = 0xE5
+	SBC_ZRX = 0xF5
+	SBC_ABS = 0xED
+	SBC_ABX = 0xFD
+	SBC_ABY = 0xF9
+	SBC_IDX = 0xE1
+	SBC_IDY = 0xF1
+
+	CMP_IMM = 0xC9
+	CMP_ZER = 0xC5
+	CMP_ZRX = 0xD5
+	CMP_ABS = 0xCD
+	CMP_ABX = 0xDD
+	CMP_ABY = 0xD9
+	CMP_IDX = 0xC1
+	CMP_IDY = 0xD1
+
+	CPX_IMM = 0xE0
+	CPX_ZER = 0xE4
+	CPX_ABS = 0xEC
+
+	CPY_IMM = 0xC0
+	CPY_ZER = 0xC4
+	CPY_ABS = 0xCC
+
 	INC_ZER = 0xE6
 	INC_ZRX = 0xF6
 	INC_ABS = 0xEE
@@ -280,6 +306,32 @@ var Opcodes = map[uint8]Opcode{
 	ADC_ABY: {Code: ADC_ABY, Operation: adc, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
 	ADC_IDX: {Code: ADC_IDX, Operation: adc, ByteSize: 2, Cycles: 6, Mode: IndirectX},
 	ADC_IDY: {Code: ADC_IDY, Operation: adc, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	SBC_IMM: {Code: SBC_IMM, Operation: sbc, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	SBC_ZER: {Code: SBC_ZER, Operation: sbc, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	SBC_ZRX: {Code: SBC_ZRX, Operation: sbc, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	SBC_ABS: {Code: SBC_ABS, Operation: sbc, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	SBC_ABX: {Code: SBC_ABX, Operation: sbc, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	SBC_ABY: {Code: SBC_ABY, Operation: sbc, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	SBC_IDX: {Code: SBC_IDX, Operation: sbc, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	SBC_IDY: {Code: SBC_IDY, Operation: sbc, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	CMP_IMM: {Code: CMP_IMM, Operation: cmp, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	CMP_ZER: {Code: CMP_ZER, Operation: cmp, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	CMP_ZRX: {Code: CMP_ZRX, Operation: cmp, ByteSize: 2, Cycles: 4, Mode: ZeroPageX},
+	CMP_ABS: {Code: CMP_ABS, Operation: cmp, ByteSize: 3, Cycles: 4, Mode: Absolute},
+	CMP_ABX: {Code: CMP_ABX, Operation: cmp, ByteSize: 3, Cycles: 4, Mode: AbsoluteX1},
+	CMP_ABY: {Code: CMP_ABY, Operation: cmp, ByteSize: 3, Cycles: 4, Mode: AbsoluteY1},
+	CMP_IDX: {Code: CMP_IDX, Operation: cmp, ByteSize: 2, Cycles: 6, Mode: IndirectX},
+	CMP_IDY: {Code: CMP_IDY, Operation: cmp, ByteSize: 2, Cycles: 5, Mode: IndirectY1},
+
+	CPX_IMM: {Code: CPX_IMM, Operation: cpx, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	CPX_ZER: {Code: CPX_ZER, Operation: cpx, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	CPX_ABS: {Code: CPX_ABS, Operation: cpx, ByteSize: 3, Cycles: 4, Mode: Absolute},
+
+	CPY_IMM: {Code: CPY_IMM, Operation: cpy, ByteSize: 2, Cycles: 2, Mode: Immediate},
+	CPY_ZER: {Code: CPY_ZER, Operation: cpy, ByteSize: 2, Cycles: 3, Mode: ZeroPage},
+	CPY_ABS: {Code: CPY_ABS, Operation: cpy, ByteSize: 3, Cycles: 4, Mode: Absolute},
 
 	// Increments
 	INC_ZER: {Code: INC_ZER, Operation: inc, ByteSize: 2, Cycles: 5, Mode: ZeroPage},

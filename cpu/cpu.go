@@ -399,11 +399,73 @@ func asl(c *Cpu, mem *Memory, mode int) {
 	}
 }
 
-// TODO: need to implement it
-// TODO: check if the carry should be add before
+func (c *Cpu) addToRegisterA(value uint8) {
+	var sum uint16 = uint16(c.Accumulator) + uint16(value)
+	if c.Status.Has(Carry) {
+		sum += 1
+	}
+
+	isGreaterThan8bit := sum > 0xff
+
+	if isGreaterThan8bit {
+		c.Status.Add(Carry)
+	} else {
+		c.Status.Remove(Carry)
+	}
+
+	var result uint8 = uint8(sum)
+	if (value^result)&(result^uint8(c.Accumulator))&0x80 != 0 {
+		c.Status.Add(Verflow)
+	} else {
+		c.Status.Remove(Verflow)
+	}
+	c.Accumulator = Register8(result)
+}
+
 // TODO: adding decilam addition later
 func adc(c *Cpu, mem *Memory, mode int) {
-	//c.Status.Remove(Carry)
+	addr := c.getOperandAddress(mem, mode)
+	data := mem.readByte(addr)
+	c.addToRegisterA(data)
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+// TODO: add tests
+func sbc(c *Cpu, mem *Memory, mode int) {
+	addr := c.getOperandAddress(mem, mode)
+	data := mem.readByte(addr)
+	data = -data
+	c.addToRegisterA(data)
+	c.updateZeroAndNegativeFlags(c.Accumulator)
+}
+
+// TODO: add tests
+func (c *Cpu) compare(mem *Memory, compareWith uint8) {
+
+	if compareWith <= uint8(c.Accumulator) {
+		c.Status.Add(Carry)
+	} else {
+		c.Status.Remove(Carry)
+	}
+
+}
+
+func cmp(c *Cpu, mem *Memory, mode int) {
+	data := mem.readByte(c.getOperandAddress(mem, mode))
+	c.compare(mem, data)
+	c.updateZeroAndNegativeFlags(c.Accumulator - Register8(data))
+}
+
+func cpx(c *Cpu, mem *Memory, mode int) {
+	data := mem.readByte(c.getOperandAddress(mem, mode))
+	c.compare(mem, data)
+	c.updateZeroAndNegativeFlags(c.XIndex - Register8(data))
+}
+
+func cpy(c *Cpu, mem *Memory, mode int) {
+	data := mem.readByte(c.getOperandAddress(mem, mode))
+	c.compare(mem, data)
+	c.updateZeroAndNegativeFlags(c.YIndex - Register8(data))
 }
 
 func jsr(c *Cpu, mem *Memory, mode int) {

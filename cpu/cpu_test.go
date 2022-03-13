@@ -2580,3 +2580,58 @@ func TestNopImplied(t *testing.T) {
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0001))
 }
+
+func TestAdcImmediate(t *testing.T) {
+	memory := Memory{
+		ADC_IMM, 0x04, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x05
+	cpu.Run(&memory)
+
+	asrt.False(t, cpu.Status.Has(Verflow))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.Equal(t, cpu.Accumulator, Register8(0x09))
+}
+
+func TestAdcImmediateWithPreviousCarry(t *testing.T) {
+	memory := Memory{
+		ADC_IMM, 0x04, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x05
+	cpu.Status.Add(Carry)
+	cpu.Run(&memory)
+
+	asrt.False(t, cpu.Status.Has(Verflow))
+	asrt.False(t, cpu.Status.Has(Carry))
+	asrt.Equal(t, cpu.Accumulator, Register8(0x0a))
+}
+
+func TestAdcImmediateWithCarryOut(t *testing.T) {
+	memory := Memory{
+		ADC_IMM, 0xF4, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0xC5
+	cpu.Run(&memory)
+
+	asrt.False(t, cpu.Status.Has(Verflow))
+	asrt.True(t, cpu.Status.Has(Carry))
+}
+
+func TestAdcImmediateWithOverflow(t *testing.T) {
+	memory := Memory{
+		ADC_IMM, 0x50, BRK_IMP,
+	}
+
+	cpu := Cpu{}
+	cpu.Accumulator = 0x50
+	cpu.Run(&memory)
+
+	asrt.Equal(t, cpu.Accumulator, Register8(0xA0))
+	asrt.True(t, cpu.Status.Has(Verflow))
+}
