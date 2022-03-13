@@ -171,6 +171,8 @@ const (
 	SEI_IMP = 0x78
 
 	BRK_IMP = 0x00
+	NOP_IMP = 0xEA
+	RTI_IMP = 0x40
 
 	OTHER = 0xFF
 )
@@ -348,7 +350,10 @@ var Opcodes = map[uint8]Opcode{
 	SED_IMP: {Code: SED_IMP, Operation: sed, ByteSize: 1, Cycles: 2, Mode: Implied},
 	SEI_IMP: {Code: SEI_IMP, Operation: sei, ByteSize: 1, Cycles: 2, Mode: Implied},
 
+	// System Functions
 	BRK_IMP: {Code: BRK_IMP, Operation: brk, ByteSize: 1, Cycles: 7, Mode: Implied},
+	NOP_IMP: {Code: NOP_IMP, Operation: nop, ByteSize: 1, Cycles: 2, Mode: Implied},
+	RTI_IMP: {Code: RTI_IMP, Operation: rti, ByteSize: 1, Cycles: 6, Mode: Implied},
 }
 
 const (
@@ -357,6 +362,7 @@ const (
 	Interrupt = 0b0000_0100
 	Decimal   = 0b0000_1000
 	Break     = 0b0001_0000
+	Break2    = 0b0010_0000
 	Verflow   = 0b0100_0000
 	Negative  = 0b1000_0000
 )

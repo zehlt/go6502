@@ -118,8 +118,21 @@ func stx(c *Cpu, mem *Memory, mode int) {
 }
 
 // TODO: impl this func
+// should call the interrupt
 func brk(c *Cpu, mem *Memory, mode int) {
+}
 
+func nop(c *Cpu, mem *Memory, mode int) {
+	// purposely does nothing
+}
+
+// TODO: add some tests maybe ?
+func rti(c *Cpu, mem *Memory, mode int) {
+	statusFlags := popStack(c, mem)
+	pc := popStack(c, mem)
+
+	c.ProgramCounter = Register16(pc)
+	c.Status = Register8(statusFlags)
 }
 
 func sty(c *Cpu, mem *Memory, mode int) {
@@ -204,33 +217,46 @@ func txs(c *Cpu, mem *Memory, mode int) {
 	c.StackPointer = c.XIndex
 }
 
-// TODO: may wrap the stack pointer
-func pha(c *Cpu, mem *Memory, mode int) {
-	mem.writeByte(uint16(c.StackPointer), uint8(c.Accumulator))
-
+func pushStack(c *Cpu, mem *Memory, value uint8) {
+	mem.writeByte(uint16(c.StackPointer), value)
 	c.StackPointer--
 }
 
-func php(c *Cpu, mem *Memory, mode int) {
-	mem.writeByte(uint16(c.StackPointer), uint8(c.Status))
+func popStack(c *Cpu, mem *Memory) uint8 {
+	c.StackPointer++
+	val := mem.readByte(uint16(c.StackPointer))
 
-	c.StackPointer--
+	return val
+}
+
+// TODO: may wrap the stack pointer
+func pha(c *Cpu, mem *Memory, mode int) {
+	pushStack(c, mem, uint8(c.Accumulator))
+}
+
+func php(c *Cpu, mem *Memory, mode int) {
+	flags := c.Status
+	flags.Add(Break)
+	flags.Add(Break2)
+
+	pushStack(c, mem, uint8(c.Status))
 }
 
 // TODO: may wrap the stack pointer also
 // Should learn about the B flag
 func pla(c *Cpu, mem *Memory, mode int) {
-	c.StackPointer++
-	val := mem.readByte(uint16(c.StackPointer))
+	val := popStack(c, mem)
 	c.Accumulator = Register8(val)
 	c.updateZeroAndNegativeFlags(c.Accumulator)
 }
 
 // TODO: should go deeper for tests
 func plp(c *Cpu, mem *Memory, mode int) {
-	c.StackPointer++
-	val := mem.readByte(uint16(c.StackPointer))
+	val := popStack(c, mem)
 	c.Status = Register8(val)
+
+	c.Status.Remove(Break)
+	c.Status.Add(Break2)
 }
 
 func inc(c *Cpu, mem *Memory, mode int) {
