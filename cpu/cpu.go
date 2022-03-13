@@ -388,7 +388,7 @@ func jsr(c *Cpu, mem *Memory, mode int) {
 	c.ProgramCounter = Register16(operand)
 }
 
-// check if the order of operation is right
+// TODO: check if the order of operation is right
 func rts(c *Cpu, mem *Memory, mode int) {
 	c.StackPointer++
 	var lo uint16 = uint16(mem.readByte(uint16(c.StackPointer)))
@@ -397,6 +397,46 @@ func rts(c *Cpu, mem *Memory, mode int) {
 	lo++
 
 	c.ProgramCounter = Register16(((hi << 8) | lo))
+}
+
+func branch(c *Cpu, mem *Memory, condition bool) {
+	if condition {
+		var jump int8 = int8(mem.readByte(uint16(c.ProgramCounter)))
+		c.ProgramCounter += Register16(jump)
+	}
+}
+
+// TODO: may check if branching works correctly to the TODO
+func bcc(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, !c.Status.Has(Carry))
+}
+
+func bcs(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, c.Status.Has(Carry))
+}
+
+func beq(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, c.Status.Has(Zero))
+}
+
+func bmi(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, c.Status.Has(Negative))
+}
+
+func bne(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, !c.Status.Has(Zero))
+}
+
+func bpl(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, !c.Status.Has(Negative))
+}
+
+func bvc(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, !c.Status.Has(Verflow))
+}
+
+func bvs(c *Cpu, mem *Memory, mode int) {
+	branch(c, mem, c.Status.Has(Verflow))
 }
 
 // TODO: check if the increment doesn't happen in the same instruction cycle

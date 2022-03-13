@@ -2552,3 +2552,17 @@ func TestRtsImplied(t *testing.T) {
 	asrt.False(t, cpu.Status.Has(Zero))
 	asrt.False(t, cpu.Status.Has(Negative))
 }
+
+// TODO: need to the some tesing
+func TestBneRelative(t *testing.T) {
+	memory := Memory{}
+	memory[0x0608] = BNE_REL
+	memory[0x0609] = 0xF8
+
+	cpu := Cpu{}
+	cpu.ProgramCounter = 0x0608
+	cpu.Status.Remove(Zero)
+	cpu.Step(&memory)
+
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0602))
+}

@@ -16,6 +16,7 @@ const (
 	IndirectY
 	IndirectY1
 	Accumulator
+	Relative
 )
 
 const (
@@ -150,6 +151,15 @@ const (
 
 	JSR_ABS = 0x20
 	RTS_IMP = 0x60
+
+	BCC_REL = 0x90
+	BCS_REL = 0xB0
+	BEQ_REL = 0xF0
+	BMI_REL = 0x30
+	BNE_REL = 0xD0
+	BPL_REL = 0x10
+	BVC_REL = 0x50
+	BVS_REL = 0x70
 
 	CLC_IMP = 0x18
 	CLD_IMP = 0xD8
@@ -317,6 +327,16 @@ var Opcodes = map[uint8]Opcode{
 
 	JSR_ABS: {Code: JSR_ABS, Operation: jsr, ByteSize: 1, Cycles: 6, Mode: Absolute},
 	RTS_IMP: {Code: RTS_IMP, Operation: rts, ByteSize: 1, Cycles: 6, Mode: Implied},
+
+	// Branching
+	BCC_REL: {Code: BCC_REL, Operation: bcc, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BCS_REL: {Code: BCS_REL, Operation: bcs, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BEQ_REL: {Code: BEQ_REL, Operation: beq, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BMI_REL: {Code: BMI_REL, Operation: bmi, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BNE_REL: {Code: BNE_REL, Operation: bne, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BPL_REL: {Code: BPL_REL, Operation: bpl, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BVC_REL: {Code: BVC_REL, Operation: bvc, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
+	BVS_REL: {Code: BVS_REL, Operation: bvs, ByteSize: 2, Cycles: 2 /*to+2*/, Mode: Relative},
 
 	// Status Flag Changes
 	CLC_IMP: {Code: CLC_IMP, Operation: clc, ByteSize: 1, Cycles: 2, Mode: Implied},
