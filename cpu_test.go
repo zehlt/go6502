@@ -11,7 +11,7 @@ func TestLdaImmediatePositiveValue(t *testing.T) {
 		LDA_IMM, 0x10, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x10))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -24,7 +24,7 @@ func TestLdaImmediateZeroValue(t *testing.T) {
 		LDA_IMM, 0x00, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -37,7 +37,7 @@ func TestLdaImmediateNegativeValue(t *testing.T) {
 		LDA_IMM, 0x80, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x80))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -52,7 +52,7 @@ func TestLdaZeroPagePositiveValue(t *testing.T) {
 	memory[0xAA] = 0x67
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x67))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -67,7 +67,7 @@ func TestLdaZeroPageNegativeValue(t *testing.T) {
 	memory[0xAA] = 0xDF
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xDF))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -82,7 +82,7 @@ func TestLdaZeroPageZeroValue(t *testing.T) {
 	memory[0xAA] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -98,7 +98,7 @@ func TestLdaZeroPageXPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x79))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -114,7 +114,7 @@ func TestLdaZeroPageXNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xEF))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -130,7 +130,7 @@ func TestLdaZeroPageXZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -146,7 +146,7 @@ func TestLdaZeroPageXWrappingValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0xFF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x22))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -161,7 +161,7 @@ func TestLdaAbsolutePositiveValue(t *testing.T) {
 	memory[0x01fe] = 0x33
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x33))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -176,7 +176,7 @@ func TestLdaAbsoluteNegativeValue(t *testing.T) {
 	memory[0x01fe] = 0xAA
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xAA))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -191,7 +191,7 @@ func TestLdaAbsoluteZeroValue(t *testing.T) {
 	memory[0x01fe] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -208,7 +208,7 @@ func TestLdaAbsoluteXPositiveValueCrossedPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x66))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABX].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -224,7 +224,7 @@ func TestLdaAbsoluteXPositiveValueNotCrossedPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x77))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -240,7 +240,7 @@ func TestLdaAbsoluteXNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x90))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -256,7 +256,7 @@ func TestLdaAbsoluteXZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -272,7 +272,7 @@ func TestLdaAbsoluteYPositiveValueNotCrossed(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x45))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -288,7 +288,7 @@ func TestLdaAbsoluteYNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xA5))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_ABY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -307,7 +307,7 @@ func TestLdaIndirectXPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x79))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IDX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -326,7 +326,7 @@ func TestLdaIndirectXNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xFF))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IDX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -345,7 +345,7 @@ func TestLdaIndirectXZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IDX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -364,7 +364,7 @@ func TestLdaIndirectYPositiveValueNotCrossed(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x01
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x55))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IDY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -383,7 +383,7 @@ func TestLdaIndirectYPositiveValueCrossed(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x66))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDA_IDY].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -396,7 +396,7 @@ func TestLdxImmediatePositiveValue(t *testing.T) {
 		LDX_IMM, 0x50, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x50))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -409,7 +409,7 @@ func TestLdxImmediateNegativeValue(t *testing.T) {
 		LDX_IMM, 0x81, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x81))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -422,7 +422,7 @@ func TestLdxImmediateZeroValue(t *testing.T) {
 		LDX_IMM, 0x00, BRK_IMP,
 	}
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -438,7 +438,7 @@ func TestLdxZeroPagePositiveValue(t *testing.T) {
 	memory[0x0045] = 0x22
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x22))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -454,7 +454,7 @@ func TestLdxZeroPageNegativeValue(t *testing.T) {
 	memory[0x0045] = 0xAE
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0xAE))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -471,7 +471,7 @@ func TestLdxZeroPageZeroValue(t *testing.T) {
 	memory[0x0045] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -488,7 +488,7 @@ func TestLdxZeroPageYPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x25))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ZRY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -505,7 +505,7 @@ func TestLdxZeroPageYNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0xDE))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ZRY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -521,7 +521,7 @@ func TestLdxAbsolutePositiveValue(t *testing.T) {
 	memory[0x2050] = 0x10
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x10))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -537,7 +537,7 @@ func TestLdxAbsoluteNegativeValue(t *testing.T) {
 	memory[0x2050] = 0xCE
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0xCE))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -553,7 +553,7 @@ func TestLdxAbsoluteZeroValue(t *testing.T) {
 	memory[0x2050] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -570,7 +570,7 @@ func TestLdxAbsoluteYPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x11
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x35))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -587,7 +587,7 @@ func TestLdxAbsoluteYPositiveValueCrossedPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x35))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABY].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -604,7 +604,7 @@ func TestLdxAbsoluteYPositiveValueCrossedPageAndNegative(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0xCC))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDX_ABY].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -618,7 +618,7 @@ func TestLdyImmediatePositiveValue(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x25))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -632,7 +632,7 @@ func TestLdyImmediateNegativeValue(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0xBE))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -646,7 +646,7 @@ func TestLdyImmediateZeroValue(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -662,7 +662,7 @@ func TestLdyZeroPagePositiveValue(t *testing.T) {
 	memory[0x0045] = 0x63
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x63))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -678,7 +678,7 @@ func TestLdyZeroPageZeroValue(t *testing.T) {
 	memory[0x0045] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -695,7 +695,7 @@ func TestLdyZeroPageXPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x22))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -712,7 +712,7 @@ func TestLdyZeroPageXNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0xF3))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -728,7 +728,7 @@ func TestLdyAbsolutePositiveValue(t *testing.T) {
 	memory[0x2fa5] = 0x78
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x78))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -744,7 +744,7 @@ func TestLdyAbsoluteNegativeValue(t *testing.T) {
 	memory[0x2fa5] = 0xaf
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0xaf))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -760,7 +760,7 @@ func TestLdyAbsoluteZeroValue(t *testing.T) {
 	memory[0x2fa5] = 0x00
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -777,7 +777,7 @@ func TestLdyAbsoluteXPositiveValueNotCrossed(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x78))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -794,7 +794,7 @@ func TestLdyAbsoluteXPositiveValueCrossed(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x78))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABX].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -811,7 +811,7 @@ func TestLdyAbsoluteXPositiveValueCrossedAndZero(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[LDY_ABX].Cycles+Opcodes[BRK_IMP].Cycles+1)
@@ -826,7 +826,7 @@ func TestStaZeroPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xAA
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0x0050]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -840,7 +840,7 @@ func TestStaZeroPageX(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0x0070]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -853,7 +853,7 @@ func TestStaAbsolute(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xBC
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0xFA50]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -867,7 +867,7 @@ func TestStaAbsoluteX(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xBC
 	cpu.XIndex = 0x30
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0xFA80]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ABX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -881,7 +881,7 @@ func TestStaAbsoluteY(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xBC
 	cpu.YIndex = 0x30
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0xFA80]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ABY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -898,7 +898,7 @@ func TestStaIndirectX(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xBC
 	cpu.XIndex = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0xA733]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_IDX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -915,7 +915,7 @@ func TestStaIndirectY(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xBC
 	cpu.YIndex = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(memory[0xA738]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_IDY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -928,7 +928,7 @@ func TestStxZeroPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0xAA
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(memory[0x50]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STX_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -942,7 +942,7 @@ func TestStxZeroPageY(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(memory[0x060]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STX_ZRY].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -955,7 +955,7 @@ func TestStxAbsolute(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0xBC
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(memory[0xFA50]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STA_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -968,7 +968,7 @@ func TestStyZeroPage(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0xAA
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(memory[0x50]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STY_ZER].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -982,7 +982,7 @@ func TestStyZeroPageX(t *testing.T) {
 	cpu := Cpu{}
 	cpu.YIndex = 0x20
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(memory[0x060]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STY_ZRX].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -995,7 +995,7 @@ func TestStyAbsolute(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0xBC
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(memory[0xFA50]))
 	asrt.Equal(t, cpu.Cycle, Opcodes[STY_ABS].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1009,7 +1009,7 @@ func TestTaxPositiveValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x10
 	cpu.XIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1025,7 +1025,7 @@ func TestTaxNegativeValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xCE
 	cpu.XIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1041,7 +1041,7 @@ func TestTaxZeroValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x00
 	cpu.XIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1056,7 +1056,7 @@ func TestTayPositiveValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x10
 	cpu.YIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1072,7 +1072,7 @@ func TestTayNegativeValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0xCE
 	cpu.YIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1088,7 +1088,7 @@ func TestTayZeroValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x00
 	cpu.YIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1103,7 +1103,7 @@ func TestTxaPositiveValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1119,7 +1119,7 @@ func TestTxaNegativeValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0xCE
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1135,7 +1135,7 @@ func TestTxaZeroValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x00
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.XIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1150,7 +1150,7 @@ func TestTyaPositiveValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1166,7 +1166,7 @@ func TestTyaNegativeValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.YIndex = 0xCE
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1182,7 +1182,7 @@ func TestTyaZeroValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.YIndex = 0x00
 	cpu.Accumulator = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1196,7 +1196,7 @@ func TestIncPositiveValue(t *testing.T) {
 
 	memory[0x10] = 0x20
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x10], uint8(0x21))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1211,7 +1211,7 @@ func TestIncNegativeValue(t *testing.T) {
 
 	memory[0x10] = 0x7F
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x10], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1226,7 +1226,7 @@ func TestIncZeroValue(t *testing.T) {
 
 	memory[0x10] = 0xFF
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x10], uint8(0x00))
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
@@ -1242,7 +1242,7 @@ func TestIncZeroPageXPositiveValue(t *testing.T) {
 	memory[0x30] = 0x20
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x30], uint8(0x21))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1258,7 +1258,7 @@ func TestIncZeroPageXNegativeValue(t *testing.T) {
 	memory[0x30] = 0x7F
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x30], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1274,7 +1274,7 @@ func TestIncZeroPageXZeroValue(t *testing.T) {
 	memory[0x30] = 0xFF
 	cpu := Cpu{}
 	cpu.XIndex = 0x20
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x30], uint8(0x00))
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
@@ -1289,7 +1289,7 @@ func TestIncAbsolutePositiveValue(t *testing.T) {
 
 	memory[0xAE10] = 0x20
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE10], uint8(0x21))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1304,7 +1304,7 @@ func TestIncAbsoluteNegativeValue(t *testing.T) {
 
 	memory[0xAE10] = 0x7F
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE10], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1319,7 +1319,7 @@ func TestIncAbsoluteZeroValue(t *testing.T) {
 
 	memory[0xAE10] = 0xFF
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE10], uint8(0x00))
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
@@ -1335,7 +1335,7 @@ func TestIncAbsoluteXPositiveValue(t *testing.T) {
 	memory[0xAE20] = 0x03
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE20], uint8(0x04))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1351,7 +1351,7 @@ func TestIncAbsoluteXNegativeValue(t *testing.T) {
 	memory[0xAE20] = 0x7F
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE20], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1367,7 +1367,7 @@ func TestIncAbsoluteXZeroValue(t *testing.T) {
 	memory[0xAE20] = 0xFF
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE20], uint8(0x00))
 	asrt.Equal(t, cpu.Accumulator, cpu.YIndex)
@@ -1382,7 +1382,7 @@ func TestInxImpliedPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x12
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x13))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1397,7 +1397,7 @@ func TestInxImpliedNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x7F
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1412,7 +1412,7 @@ func TestInxImpliedZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0xFF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1427,7 +1427,7 @@ func TestInyImpliedPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x12
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x13))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1442,7 +1442,7 @@ func TestInyImpliedNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x7F
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1457,7 +1457,7 @@ func TestInyImpliedZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0xFF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1472,7 +1472,7 @@ func TestDecZeroPagePositiveValue(t *testing.T) {
 
 	memory[0xAE] = 0x15
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE], uint8(0x14))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1487,7 +1487,7 @@ func TestDecZeroPageNegativeValue(t *testing.T) {
 
 	memory[0xAE] = 0x81
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1502,7 +1502,7 @@ func TestDecZeroPageZeroValue(t *testing.T) {
 
 	memory[0xAE] = 0x01
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xAE], uint8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1518,7 +1518,7 @@ func TestDecZeroPageXPositiveValue(t *testing.T) {
 	memory[0x6A] = 0x15
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x6A], uint8(0x14))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1534,7 +1534,7 @@ func TestDecZeroPageXNagativeValue(t *testing.T) {
 	memory[0x6A] = 0x81
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x6A], uint8(0x80))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1550,7 +1550,7 @@ func TestDecZeroPageXZeroValue(t *testing.T) {
 	memory[0x6A] = 0x01
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x6A], uint8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1565,7 +1565,7 @@ func TestDecAbsolutePositiveValue(t *testing.T) {
 
 	memory[0xEA5A] = 0x15
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA5A], uint8(0x14))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1580,7 +1580,7 @@ func TestDecAbsoluteNegativeValue(t *testing.T) {
 
 	memory[0xEA5A] = 0x90
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA5A], uint8(0x8F))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1595,7 +1595,7 @@ func TestDecAbsoluteZeroValue(t *testing.T) {
 
 	memory[0xEA5A] = 0x01
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA5A], uint8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1611,7 +1611,7 @@ func TestDecAbsoluteXPositiveValue(t *testing.T) {
 	memory[0xEA84] = 0x15
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA84], uint8(0x14))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1627,7 +1627,7 @@ func TestDecAbsoluteXNegativeValue(t *testing.T) {
 	memory[0xEA84] = 0xDE
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA84], uint8(0xDD))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1643,7 +1643,7 @@ func TestDecAbsoluteXZeroValue(t *testing.T) {
 	memory[0xEA84] = 0x01
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0xEA84], uint8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1658,7 +1658,7 @@ func TestDexImpliedPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x0F))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1673,7 +1673,7 @@ func TestDexImpliedNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0xFD))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1688,7 +1688,7 @@ func TestDexImpliedZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.XIndex = 0x01
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1703,7 +1703,7 @@ func TestDeyImpliedPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x0F))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1718,7 +1718,7 @@ func TestDeyImpliedNegativeValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0xFE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0xFD))
 	asrt.True(t, cpu.Status.Has(Negative))
@@ -1733,7 +1733,7 @@ func TestDeyImpliedZeroValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.YIndex = 0x01
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.YIndex, Register8(0x00))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1749,7 +1749,7 @@ func TestClcImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Status.Add(Carry)
 	asrt.True(t, cpu.Status.Has(Carry))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Carry))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1765,7 +1765,7 @@ func TestClcImpliedWithOtherFlagSet(t *testing.T) {
 	cpu.Status.Add(Negative)
 	cpu.Status.Add(Zero)
 	asrt.True(t, cpu.Status.Has(Carry))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Carry))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1779,7 +1779,7 @@ func TestCldImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Status.Add(Decimal)
 	asrt.True(t, cpu.Status.Has(Decimal))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Decimal))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLD_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1795,7 +1795,7 @@ func TestCldImpliedWithOtherFlagSet(t *testing.T) {
 	cpu.Status.Add(Negative)
 	cpu.Status.Add(Zero)
 	asrt.True(t, cpu.Status.Has(Decimal))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Decimal))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLD_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1809,7 +1809,7 @@ func TestCliImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Status.Add(Interrupt)
 	asrt.True(t, cpu.Status.Has(Interrupt))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Interrupt))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLI_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1823,7 +1823,7 @@ func TestClvImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Status.Add(Verflow)
 	asrt.True(t, cpu.Status.Has(Verflow))
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.False(t, cpu.Status.Has(Verflow))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[CLV_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1835,7 +1835,7 @@ func TestSecImplied(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.True(t, cpu.Status.Has(Carry))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[SEC_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1847,7 +1847,7 @@ func TestSedImplied(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.True(t, cpu.Status.Has(Decimal))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[SED_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1859,7 +1859,7 @@ func TestSeiImplied(t *testing.T) {
 	}
 
 	cpu := Cpu{}
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 	asrt.True(t, cpu.Status.Has(Interrupt))
 
 	asrt.Equal(t, cpu.Cycle, Opcodes[SEI_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1872,7 +1872,7 @@ func TestAndImmediate(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xF5
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xF0))
 	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1885,7 +1885,7 @@ func TestAndImmediateZero(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xD1
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1900,7 +1900,7 @@ func TestAndImmediateNegative(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xD1
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xD1))
 	asrt.Equal(t, cpu.Cycle, Opcodes[AND_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1915,7 +1915,7 @@ func TestEorImmediate(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xF5
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x05))
 	asrt.Equal(t, cpu.Cycle, Opcodes[EOR_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1928,7 +1928,7 @@ func TestEorImmediateZero(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x45
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.Equal(t, cpu.Cycle, Opcodes[EOR_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1942,7 +1942,7 @@ func TestAorImmediate(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x15))
 	asrt.False(t, cpu.Status.Has(Negative))
@@ -1956,7 +1956,7 @@ func TestAorImmediateNegative(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xF5))
 	asrt.Equal(t, cpu.Cycle, Opcodes[ORA_IMM].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -1971,7 +1971,7 @@ func TestBitZeroPageTwoLastBitSet(t *testing.T) {
 	cpu := Cpu{}
 	memory[0x30] = 0xF0
 	cpu.Accumulator = 0x06
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x06))
 	asrt.Equal(t, memory[0x30], uint8(0xF0))
@@ -1990,7 +1990,7 @@ func TestBitZeroPage(t *testing.T) {
 	cpu := Cpu{}
 	memory[0x50] = 0x07
 	cpu.Accumulator = 0x06
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x06))
 	asrt.Equal(t, memory[0x50], uint8(0x07))
@@ -2009,7 +2009,7 @@ func TestTsxImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
 	cpu.StackPointer = 0x45
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x45))
 
@@ -2026,7 +2026,7 @@ func TestTsxImpliedZeroValue(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x10
 	cpu.StackPointer = 0x00
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.XIndex, Register8(0x00))
 
@@ -2043,7 +2043,7 @@ func TestTxsImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.XIndex = 0x45
 	cpu.StackPointer = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0x45))
 	asrt.Equal(t, cpu.Cycle, Opcodes[TXS_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
@@ -2057,7 +2057,7 @@ func TestPhaImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x33
 	cpu.StackPointer = 0xFF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFE))
 	asrt.Equal(t, memory[0x01FF], uint8(0x33))
@@ -2072,7 +2072,7 @@ func TestPhaImpliedMultiplePush(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x33
 	cpu.StackPointer = 0xFF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFC))
 	asrt.Equal(t, memory[0x01FF], uint8(0x33))
@@ -2090,7 +2090,7 @@ func TestPhpImplied(t *testing.T) {
 	cpu.StackPointer = 0xFF
 	cpu.Status.Add(Decimal)
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	// TODO: create the checks
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFE))
@@ -2107,7 +2107,7 @@ func TestPhpImpliedMultiplePush(t *testing.T) {
 	cpu.StackPointer = 0xFF
 	cpu.Status.Add(Decimal)
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	// TODO: create the checks
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFC))
@@ -2125,7 +2125,7 @@ func TestPlaImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
 	memory[0x01FF] = 0x15
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
 	asrt.Equal(t, memory[0x01FE], uint8(0x00))
@@ -2142,7 +2142,7 @@ func TestPlaImpliedNegative(t *testing.T) {
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
 	memory[0x01FF] = 0xAE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
 	asrt.Equal(t, memory[0x01FE], uint8(0x00))
@@ -2161,7 +2161,7 @@ func TestPlpImplied(t *testing.T) {
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
 	memory[0x01FF] = 0b0101_0101
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
 	asrt.Equal(t, cpu.Status, Register8(0b0110_0101))
@@ -2176,7 +2176,7 @@ func TestPlpImpliedMultipleTime(t *testing.T) {
 	cpu.StackPointer = 0xFD
 	memory[0x01FE] = 0b0101_0101
 	memory[0x01FF] = 0b1111_0000
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
 	asrt.Equal(t, cpu.Status, Register8(0b1110_0000))
@@ -2190,7 +2190,7 @@ func TestAslAccumulatorWithCarryAndZero(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x80
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2205,7 +2205,7 @@ func TestAslAccumulatorWithCarryAndPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x85
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x0A))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2220,7 +2220,7 @@ func TestAslAccumulatorWithNegativeResult(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x50
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xA0))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2235,7 +2235,7 @@ func TestAslZeroPageCarryAndZero(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x25] = 0x80
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x25], uint8(0x00))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2250,7 +2250,7 @@ func TestAslZeroPageNegative(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x25] = 0x50
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x25], uint8(0xA0))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2265,7 +2265,7 @@ func TestAslZeroPageCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x25] = 0x82
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x25], uint8(0x04))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2280,7 +2280,7 @@ func TestLsrAccumulatorPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x04
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x02))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2295,7 +2295,7 @@ func TestLsrAccumulatorZeroAndCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x01
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2310,7 +2310,7 @@ func TestLsrAccumulatorCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x02))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2325,7 +2325,7 @@ func TestLsrZeroPageCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x33] = 0xDF
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x33], uint8(0x6f))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2340,7 +2340,7 @@ func TestRolAccumulatorPositive(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x20))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2355,7 +2355,7 @@ func TestRolAccumulatorNegativeAndCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xDE
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xBC))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2370,7 +2370,7 @@ func TestRolAccumulatorZero(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x80
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x00))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2386,7 +2386,7 @@ func TestRolAccumulatorWithPreviousCarry(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x20
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x41))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2402,7 +2402,7 @@ func TestRolZeroPageCarryAndZero(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x33] = 0x80
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x33], uint8(0x00))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2418,7 +2418,7 @@ func TestRolZeroPageCarryAndZeroWithPreviousCarry(t *testing.T) {
 	cpu := Cpu{}
 	memory[0x33] = 0x80
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x33], uint8(0x01))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2433,7 +2433,7 @@ func TestRolZeroPageCarryPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x33] = 0x10
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x33], uint8(0x20))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2448,7 +2448,7 @@ func TestRorAccumulatorPositiveValue(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x08
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x04))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2464,7 +2464,7 @@ func TestRorAccumulatorPositiveWithPreviousCarry(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x08
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0x84))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2479,7 +2479,7 @@ func TestRorZeroPageCarry(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x33] = 0xB5
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, memory[0x33], uint8(0x5A))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2494,7 +2494,7 @@ func TestJmpAbsolute(t *testing.T) {
 
 	cpu := Cpu{}
 	memory[0x0600] = BRK_IMP
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0600))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2510,7 +2510,7 @@ func TestJmpIndirect(t *testing.T) {
 	cpu := Cpu{}
 	memory[0x0152] = 0x01
 	memory[0x0153] = 0x04
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0401))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2526,7 +2526,7 @@ func TestJsrAbsolute(t *testing.T) {
 	cpu := Cpu{}
 	memory[0x060f] = BRK_IMP
 	cpu.StackPointer = 0xff
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x060f))
 	asrt.Equal(t, cpu.StackPointer, Register8(0xfd))
@@ -2546,7 +2546,7 @@ func TestRtsImplied(t *testing.T) {
 	cpu.StackPointer = 0xFD
 	memory[0x01FF] = 0x00
 	memory[0x01FE] = 0x03
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0003))
 	asrt.Equal(t, cpu.StackPointer, Register8(0xff))
@@ -2564,7 +2564,7 @@ func TestBneRelative(t *testing.T) {
 	cpu := Cpu{}
 	cpu.ProgramCounter = 0x0608
 	cpu.Status.Remove(Zero)
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0602))
 }
@@ -2576,7 +2576,7 @@ func TestNopImplied(t *testing.T) {
 
 	cpu := Cpu{}
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0000))
-	cpu.Step(&memory)
+	cpu.Step(BusEx{&memory})
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0001))
 }
@@ -2588,7 +2588,7 @@ func TestAdcImmediate(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x05
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.False(t, cpu.Status.Has(Verflow))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2603,7 +2603,7 @@ func TestAdcImmediateWithPreviousCarry(t *testing.T) {
 	cpu := Cpu{}
 	cpu.Accumulator = 0x05
 	cpu.Status.Add(Carry)
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.False(t, cpu.Status.Has(Verflow))
 	asrt.False(t, cpu.Status.Has(Carry))
@@ -2617,7 +2617,7 @@ func TestAdcImmediateWithCarryOut(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0xC5
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.False(t, cpu.Status.Has(Verflow))
 	asrt.True(t, cpu.Status.Has(Carry))
@@ -2630,7 +2630,7 @@ func TestAdcImmediateWithOverflow(t *testing.T) {
 
 	cpu := Cpu{}
 	cpu.Accumulator = 0x50
-	cpu.Run(&memory)
+	cpu.Run(BusEx{&memory})
 
 	asrt.Equal(t, cpu.Accumulator, Register8(0xA0))
 	asrt.True(t, cpu.Status.Has(Verflow))

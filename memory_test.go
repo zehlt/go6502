@@ -17,7 +17,7 @@ func TestReadSingleByte(t *testing.T) {
 	mem := initSampleMemory()
 
 	var addr uint16 = 0x02
-	b := mem.ReadByte(addr)
+	b := mem.Read(addr)
 
 	asrt.Equal(t, mem[addr], b)
 }
@@ -28,7 +28,7 @@ func TestWriteSingleByte(t *testing.T) {
 	var addr uint16 = 0xCA
 	var data uint8 = 0xEF
 
-	mem.WriteByte(addr, data)
+	mem.Write(addr, data)
 
 	asrt.Equal(t, mem[addr], data)
 }
@@ -39,13 +39,13 @@ func TestMultipleWriteAndRead(t *testing.T) {
 	var addr uint16 = 0xCA
 	var data uint8 = 0xEF
 
-	mem.WriteByte(addr, data)
-	mem.WriteByte(addr+2, data+2)
-	mem.WriteByte(addr+10, data+10)
+	mem.Write(addr, data)
+	mem.Write(addr+2, data+2)
+	mem.Write(addr+10, data+10)
 
-	got1 := mem.ReadByte(addr)
-	got2 := mem.ReadByte(addr + 2)
-	got3 := mem.ReadByte(addr + 10)
+	got1 := mem.Read(addr)
+	got2 := mem.Read(addr + 2)
+	got3 := mem.Read(addr + 10)
 
 	asrt.Equal(t, mem[addr], got1)
 	asrt.Equal(t, mem[addr+2], got2)
@@ -92,18 +92,18 @@ func TestWriteTwoWord(t *testing.T) {
 }
 
 // TODO: Probably test for overloading ?
-func TestWriteBytes(t *testing.T) {
-	mem := initSampleMemory()
+// func TestWrites(t *testing.T) {
+// 	mem := initSampleMemory()
 
-	var addr uint16 = 0xA3E4
+// 	var addr uint16 = 0xA3E4
 
-	want := []uint8{
-		0x01, 0x58, 0xCE, 0x9D,
-	}
+// 	want := []uint8{
+// 		0x01, 0x58, 0xCE, 0x9D,
+// 	}
 
-	mem.WriteBytes(addr, want)
+// 	mem.Writes(addr, want)
 
-	for i := 0; i < len(want); i++ {
-		asrt.Equal(t, mem[addr+(uint16(i))], want[i])
-	}
-}
+// 	for i := 0; i < len(want); i++ {
+// 		asrt.Equal(t, mem[addr+(uint16(i))], want[i])
+// 	}
+// }

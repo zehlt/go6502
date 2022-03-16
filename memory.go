@@ -21,17 +21,17 @@ package go6502
 
 type Mem [0xFFFF]uint8
 
-func (m *Mem) ReadByte(addr uint16) uint8 {
+func (m *Mem) Read(addr uint16) uint8 {
 	return m[addr]
 }
 
-func (m *Mem) WriteByte(addr uint16, data uint8) {
+func (m *Mem) Write(addr uint16, data uint8) {
 	m[addr] = data
 }
 
 func (m *Mem) ReadWord(addr uint16) uint16 {
-	var lo uint16 = uint16(m.ReadByte(addr))
-	var hi uint16 = uint16(m.ReadByte(addr + 1))
+	var lo uint16 = uint16(m.Read(addr))
+	var hi uint16 = uint16(m.Read(addr + 1))
 	var word uint16 = ((hi << 8) | lo)
 	return word
 }
@@ -39,12 +39,12 @@ func (m *Mem) ReadWord(addr uint16) uint16 {
 func (m *Mem) WriteWord(addr uint16, data uint16) {
 	hi := uint8((data >> 8))
 	lo := uint8(data)
-	m.WriteByte(addr, lo)
-	m.WriteByte(addr+1, hi)
+	m.Write(addr, lo)
+	m.Write(addr+1, hi)
 }
 
 func (m *Mem) WriteBytes(addr uint16, data []uint8) {
 	for index, value := range data {
-		m.WriteByte(addr+uint16(index), value)
+		m.Write(addr+uint16(index), value)
 	}
 }

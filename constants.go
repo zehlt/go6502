@@ -208,7 +208,7 @@ type Opcode struct {
 	ByteSize  int
 	Cycles    int
 	Mode      int
-	Operation func(cpu *Cpu, mem *Mem, mode int)
+	Operation func(cpu *Cpu, bus Bus, mode int)
 }
 
 var Opcodes = map[uint8]Opcode{
