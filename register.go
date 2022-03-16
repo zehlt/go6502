@@ -1,4 +1,4 @@
-package cpu
+package go6502
 
 type Register16 uint16
 type Register8 uint8

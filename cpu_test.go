@@ -1,4 +1,4 @@
-package cpu
+package go6502
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestLdaImmediatePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IMM, 0x10, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -20,7 +20,7 @@ func TestLdaImmediatePositiveValue(t *testing.T) {
 }
 
 func TestLdaImmediateZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IMM, 0x00, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -33,7 +33,7 @@ func TestLdaImmediateZeroValue(t *testing.T) {
 }
 
 func TestLdaImmediateNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IMM, 0x80, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -46,7 +46,7 @@ func TestLdaImmediateNegativeValue(t *testing.T) {
 }
 
 func TestLdaZeroPagePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZER, 0xAA, BRK_IMP,
 	}
 	memory[0xAA] = 0x67
@@ -61,7 +61,7 @@ func TestLdaZeroPagePositiveValue(t *testing.T) {
 }
 
 func TestLdaZeroPageNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZER, 0xAA, BRK_IMP,
 	}
 	memory[0xAA] = 0xDF
@@ -76,7 +76,7 @@ func TestLdaZeroPageNegativeValue(t *testing.T) {
 }
 
 func TestLdaZeroPageZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZER, 0xAA, BRK_IMP,
 	}
 	memory[0xAA] = 0x00
@@ -91,7 +91,7 @@ func TestLdaZeroPageZeroValue(t *testing.T) {
 }
 
 func TestLdaZeroPageXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZRX, 0x20, BRK_IMP,
 	}
 	memory[0x30] = 0x79
@@ -107,7 +107,7 @@ func TestLdaZeroPageXPositiveValue(t *testing.T) {
 }
 
 func TestLdaZeroPageXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZRX, 0x20, BRK_IMP,
 	}
 	memory[0x30] = 0xEF
@@ -123,7 +123,7 @@ func TestLdaZeroPageXNegativeValue(t *testing.T) {
 }
 
 func TestLdaZeroPageXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZRX, 0x20, BRK_IMP,
 	}
 	memory[0x30] = 0x00
@@ -139,7 +139,7 @@ func TestLdaZeroPageXZeroValue(t *testing.T) {
 }
 
 func TestLdaZeroPageXWrappingValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ZRX, 0x80, BRK_IMP,
 	}
 	memory[0x7F] = 0x22
@@ -155,7 +155,7 @@ func TestLdaZeroPageXWrappingValue(t *testing.T) {
 }
 
 func TestLdaAbsolutePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABS, 0xFE, 0x01, BRK_IMP,
 	}
 	memory[0x01fe] = 0x33
@@ -170,7 +170,7 @@ func TestLdaAbsolutePositiveValue(t *testing.T) {
 }
 
 func TestLdaAbsoluteNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABS, 0xFE, 0x01, BRK_IMP,
 	}
 	memory[0x01fe] = 0xAA
@@ -185,7 +185,7 @@ func TestLdaAbsoluteNegativeValue(t *testing.T) {
 }
 
 func TestLdaAbsoluteZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABS, 0xFE, 0x01, BRK_IMP,
 	}
 	memory[0x01fe] = 0x00
@@ -200,7 +200,7 @@ func TestLdaAbsoluteZeroValue(t *testing.T) {
 }
 
 func TestLdaAbsoluteXPositiveValueCrossedPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABX, 0xFF, 0x01, BRK_IMP,
 	}
 	// 0x01ff+0x0010 = 0x020f
@@ -217,7 +217,7 @@ func TestLdaAbsoluteXPositiveValueCrossedPage(t *testing.T) {
 }
 
 func TestLdaAbsoluteXPositiveValueNotCrossedPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABX, 0x00, 0x01, BRK_IMP,
 	}
 	memory[0x0110] = 0x77
@@ -233,7 +233,7 @@ func TestLdaAbsoluteXPositiveValueNotCrossedPage(t *testing.T) {
 }
 
 func TestLdaAbsoluteXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABX, 0x20, 0x01, BRK_IMP,
 	}
 	memory[0x0130] = 0x90
@@ -249,7 +249,7 @@ func TestLdaAbsoluteXNegativeValue(t *testing.T) {
 }
 
 func TestLdaAbsoluteXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABX, 0x00, 0x01, BRK_IMP,
 	}
 	memory[0x0110] = 0x00
@@ -265,7 +265,7 @@ func TestLdaAbsoluteXZeroValue(t *testing.T) {
 }
 
 func TestLdaAbsoluteYPositiveValueNotCrossed(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABY, 0x10, 0x0A, BRK_IMP,
 	}
 	memory[0x0A30] = 0x45
@@ -281,7 +281,7 @@ func TestLdaAbsoluteYPositiveValueNotCrossed(t *testing.T) {
 }
 
 func TestLdaAbsoluteYNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_ABY, 0x10, 0x0A, BRK_IMP,
 	}
 	memory[0x0A30] = 0xA5
@@ -297,7 +297,7 @@ func TestLdaAbsoluteYNegativeValue(t *testing.T) {
 }
 
 func TestLdaIndirectXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IDX, 0x10, BRK_IMP,
 	}
 	memory[0x0015] = 0x07
@@ -316,7 +316,7 @@ func TestLdaIndirectXPositiveValue(t *testing.T) {
 }
 
 func TestLdaIndirectXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IDX, 0x10, BRK_IMP,
 	}
 	memory[0x0015] = 0x07
@@ -335,7 +335,7 @@ func TestLdaIndirectXNegativeValue(t *testing.T) {
 }
 
 func TestLdaIndirectXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IDX, 0x10, BRK_IMP,
 	}
 	memory[0x0015] = 0x07
@@ -354,7 +354,7 @@ func TestLdaIndirectXZeroValue(t *testing.T) {
 }
 
 func TestLdaIndirectYPositiveValueNotCrossed(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IDY, 0x20, BRK_IMP,
 	}
 	memory[0x0020] = 0x03
@@ -373,7 +373,7 @@ func TestLdaIndirectYPositiveValueNotCrossed(t *testing.T) {
 }
 
 func TestLdaIndirectYPositiveValueCrossed(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDA_IDY, 0x20, BRK_IMP,
 	}
 	memory[0x0020] = 0xFF
@@ -392,7 +392,7 @@ func TestLdaIndirectYPositiveValueCrossed(t *testing.T) {
 }
 
 func TestLdxImmediatePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_IMM, 0x50, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -405,7 +405,7 @@ func TestLdxImmediatePositiveValue(t *testing.T) {
 }
 
 func TestLdxImmediateNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_IMM, 0x81, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -418,7 +418,7 @@ func TestLdxImmediateNegativeValue(t *testing.T) {
 }
 
 func TestLdxImmediateZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_IMM, 0x00, BRK_IMP,
 	}
 	cpu := Cpu{}
@@ -431,7 +431,7 @@ func TestLdxImmediateZeroValue(t *testing.T) {
 }
 
 func TestLdxZeroPagePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ZER, 0x45, BRK_IMP,
 	}
 
@@ -447,7 +447,7 @@ func TestLdxZeroPagePositiveValue(t *testing.T) {
 }
 
 func TestLdxZeroPageNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ZER, 0x45, BRK_IMP,
 	}
 
@@ -464,7 +464,7 @@ func TestLdxZeroPageNegativeValue(t *testing.T) {
 
 // TODO: assure that wrap up doesn't cause any pb
 func TestLdxZeroPageZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ZER, 0x45, BRK_IMP,
 	}
 
@@ -480,7 +480,7 @@ func TestLdxZeroPageZeroValue(t *testing.T) {
 }
 
 func TestLdxZeroPageYPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ZRY, 0x50, BRK_IMP,
 	}
 
@@ -497,7 +497,7 @@ func TestLdxZeroPageYPositiveValue(t *testing.T) {
 }
 
 func TestLdxZeroPageYNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ZRY, 0x50, BRK_IMP,
 	}
 
@@ -514,7 +514,7 @@ func TestLdxZeroPageYNegativeValue(t *testing.T) {
 }
 
 func TestLdxAbsolutePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABS, 0x50, 0x20, BRK_IMP,
 	}
 
@@ -530,7 +530,7 @@ func TestLdxAbsolutePositiveValue(t *testing.T) {
 }
 
 func TestLdxAbsoluteNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABS, 0x50, 0x20, BRK_IMP,
 	}
 
@@ -546,7 +546,7 @@ func TestLdxAbsoluteNegativeValue(t *testing.T) {
 }
 
 func TestLdxAbsoluteZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABS, 0x50, 0x20, BRK_IMP,
 	}
 
@@ -562,7 +562,7 @@ func TestLdxAbsoluteZeroValue(t *testing.T) {
 }
 
 func TestLdxAbsoluteYPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABY, 0x50, 0x20, BRK_IMP,
 	}
 
@@ -579,7 +579,7 @@ func TestLdxAbsoluteYPositiveValue(t *testing.T) {
 }
 
 func TestLdxAbsoluteYPositiveValueCrossedPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABY, 0xFF, 0x20, BRK_IMP,
 	}
 
@@ -596,7 +596,7 @@ func TestLdxAbsoluteYPositiveValueCrossedPage(t *testing.T) {
 }
 
 func TestLdxAbsoluteYPositiveValueCrossedPageAndNegative(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDX_ABY, 0xFF, 0x20, BRK_IMP,
 	}
 
@@ -613,7 +613,7 @@ func TestLdxAbsoluteYPositiveValueCrossedPageAndNegative(t *testing.T) {
 }
 
 func TestLdyImmediatePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_IMM, 0x25, BRK_IMP,
 	}
 
@@ -627,7 +627,7 @@ func TestLdyImmediatePositiveValue(t *testing.T) {
 }
 
 func TestLdyImmediateNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_IMM, 0xBE, BRK_IMP,
 	}
 
@@ -641,7 +641,7 @@ func TestLdyImmediateNegativeValue(t *testing.T) {
 }
 
 func TestLdyImmediateZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_IMM, 0x00, BRK_IMP,
 	}
 
@@ -655,7 +655,7 @@ func TestLdyImmediateZeroValue(t *testing.T) {
 }
 
 func TestLdyZeroPagePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ZER, 0x45, BRK_IMP,
 	}
 
@@ -671,7 +671,7 @@ func TestLdyZeroPagePositiveValue(t *testing.T) {
 }
 
 func TestLdyZeroPageZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ZER, 0x45, BRK_IMP,
 	}
 
@@ -687,7 +687,7 @@ func TestLdyZeroPageZeroValue(t *testing.T) {
 }
 
 func TestLdyZeroPageXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ZRX, 0x45, BRK_IMP,
 	}
 
@@ -704,7 +704,7 @@ func TestLdyZeroPageXPositiveValue(t *testing.T) {
 }
 
 func TestLdyZeroPageXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ZRX, 0x45, BRK_IMP,
 	}
 
@@ -721,7 +721,7 @@ func TestLdyZeroPageXNegativeValue(t *testing.T) {
 }
 
 func TestLdyAbsolutePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABS, 0xa5, 0x2f, BRK_IMP,
 	}
 
@@ -737,7 +737,7 @@ func TestLdyAbsolutePositiveValue(t *testing.T) {
 }
 
 func TestLdyAbsoluteNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABS, 0xa5, 0x2f, BRK_IMP,
 	}
 
@@ -753,7 +753,7 @@ func TestLdyAbsoluteNegativeValue(t *testing.T) {
 }
 
 func TestLdyAbsoluteZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABS, 0xa5, 0x2f, BRK_IMP,
 	}
 
@@ -769,7 +769,7 @@ func TestLdyAbsoluteZeroValue(t *testing.T) {
 }
 
 func TestLdyAbsoluteXPositiveValueNotCrossed(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABX, 0x50, 0x2f, BRK_IMP,
 	}
 
@@ -786,7 +786,7 @@ func TestLdyAbsoluteXPositiveValueNotCrossed(t *testing.T) {
 }
 
 func TestLdyAbsoluteXPositiveValueCrossed(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABX, 0xff, 0x2f, BRK_IMP,
 	}
 
@@ -803,7 +803,7 @@ func TestLdyAbsoluteXPositiveValueCrossed(t *testing.T) {
 }
 
 func TestLdyAbsoluteXPositiveValueCrossedAndZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LDY_ABX, 0xff, 0x2f, BRK_IMP,
 	}
 
@@ -820,7 +820,7 @@ func TestLdyAbsoluteXPositiveValueCrossedAndZero(t *testing.T) {
 }
 
 func TestStaZeroPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_ZER, 0x50, BRK_IMP,
 	}
 
@@ -833,7 +833,7 @@ func TestStaZeroPage(t *testing.T) {
 }
 
 func TestStaZeroPageX(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_ZRX, 0x50, BRK_IMP,
 	}
 
@@ -847,7 +847,7 @@ func TestStaZeroPageX(t *testing.T) {
 }
 
 func TestStaAbsolute(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_ABS, 0x50, 0xFA, BRK_IMP,
 	}
 
@@ -860,7 +860,7 @@ func TestStaAbsolute(t *testing.T) {
 }
 
 func TestStaAbsoluteX(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_ABX, 0x50, 0xFA, BRK_IMP,
 	}
 
@@ -874,7 +874,7 @@ func TestStaAbsoluteX(t *testing.T) {
 }
 
 func TestStaAbsoluteY(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_ABY, 0x50, 0xFA, BRK_IMP,
 	}
 
@@ -888,7 +888,7 @@ func TestStaAbsoluteY(t *testing.T) {
 }
 
 func TestStaIndirectX(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_IDX, 0x20, BRK_IMP,
 	}
 
@@ -905,7 +905,7 @@ func TestStaIndirectX(t *testing.T) {
 }
 
 func TestStaIndirectY(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STA_IDY, 0x20, BRK_IMP,
 	}
 
@@ -922,7 +922,7 @@ func TestStaIndirectY(t *testing.T) {
 }
 
 func TestStxZeroPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STX_ZER, 0x50, BRK_IMP,
 	}
 
@@ -935,7 +935,7 @@ func TestStxZeroPage(t *testing.T) {
 }
 
 func TestStxZeroPageY(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STX_ZRY, 0x50, BRK_IMP,
 	}
 
@@ -949,7 +949,7 @@ func TestStxZeroPageY(t *testing.T) {
 }
 
 func TestStxAbsolute(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STX_ABS, 0x50, 0xFA, BRK_IMP,
 	}
 
@@ -962,7 +962,7 @@ func TestStxAbsolute(t *testing.T) {
 }
 
 func TestStyZeroPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STY_ZER, 0x50, BRK_IMP,
 	}
 
@@ -975,7 +975,7 @@ func TestStyZeroPage(t *testing.T) {
 }
 
 func TestStyZeroPageX(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STY_ZRX, 0x50, BRK_IMP,
 	}
 
@@ -989,7 +989,7 @@ func TestStyZeroPageX(t *testing.T) {
 }
 
 func TestStyAbsolute(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		STY_ABS, 0x50, 0xFA, BRK_IMP,
 	}
 
@@ -1002,7 +1002,7 @@ func TestStyAbsolute(t *testing.T) {
 }
 
 func TestTaxPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAX_IMP, BRK_IMP,
 	}
 
@@ -1018,7 +1018,7 @@ func TestTaxPositiveValue(t *testing.T) {
 }
 
 func TestTaxNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAX_IMP, BRK_IMP,
 	}
 
@@ -1034,7 +1034,7 @@ func TestTaxNegativeValue(t *testing.T) {
 }
 
 func TestTaxZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAX_IMP, BRK_IMP,
 	}
 
@@ -1049,7 +1049,7 @@ func TestTaxZeroValue(t *testing.T) {
 }
 
 func TestTayPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAY_IMP, BRK_IMP,
 	}
 
@@ -1065,7 +1065,7 @@ func TestTayPositiveValue(t *testing.T) {
 }
 
 func TestTayNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAY_IMP, BRK_IMP,
 	}
 
@@ -1081,7 +1081,7 @@ func TestTayNegativeValue(t *testing.T) {
 }
 
 func TestTayZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TAY_IMP, BRK_IMP,
 	}
 
@@ -1096,7 +1096,7 @@ func TestTayZeroValue(t *testing.T) {
 }
 
 func TestTxaPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TXA_IMP, BRK_IMP,
 	}
 
@@ -1112,7 +1112,7 @@ func TestTxaPositiveValue(t *testing.T) {
 }
 
 func TestTxaNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TXA_IMP, BRK_IMP,
 	}
 
@@ -1128,7 +1128,7 @@ func TestTxaNegativeValue(t *testing.T) {
 }
 
 func TestTxaZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TXA_IMP, BRK_IMP,
 	}
 
@@ -1143,7 +1143,7 @@ func TestTxaZeroValue(t *testing.T) {
 }
 
 func TestTyaPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TYA_IMP, BRK_IMP,
 	}
 
@@ -1159,7 +1159,7 @@ func TestTyaPositiveValue(t *testing.T) {
 }
 
 func TestTyaNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TYA_IMP, BRK_IMP,
 	}
 
@@ -1175,7 +1175,7 @@ func TestTyaNegativeValue(t *testing.T) {
 }
 
 func TestTyaZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TYA_IMP, BRK_IMP,
 	}
 
@@ -1190,7 +1190,7 @@ func TestTyaZeroValue(t *testing.T) {
 }
 
 func TestIncPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZER, 0x10, BRK_IMP,
 	}
 
@@ -1205,7 +1205,7 @@ func TestIncPositiveValue(t *testing.T) {
 }
 
 func TestIncNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZER, 0x10, BRK_IMP,
 	}
 
@@ -1220,7 +1220,7 @@ func TestIncNegativeValue(t *testing.T) {
 }
 
 func TestIncZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZER, 0x10, BRK_IMP,
 	}
 
@@ -1235,7 +1235,7 @@ func TestIncZeroValue(t *testing.T) {
 }
 
 func TestIncZeroPageXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZRX, 0x10, BRK_IMP,
 	}
 
@@ -1251,7 +1251,7 @@ func TestIncZeroPageXPositiveValue(t *testing.T) {
 }
 
 func TestIncZeroPageXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZRX, 0x10, BRK_IMP,
 	}
 
@@ -1267,7 +1267,7 @@ func TestIncZeroPageXNegativeValue(t *testing.T) {
 }
 
 func TestIncZeroPageXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ZRX, 0x10, BRK_IMP,
 	}
 
@@ -1283,7 +1283,7 @@ func TestIncZeroPageXZeroValue(t *testing.T) {
 }
 
 func TestIncAbsolutePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABS, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1298,7 +1298,7 @@ func TestIncAbsolutePositiveValue(t *testing.T) {
 }
 
 func TestIncAbsoluteNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABS, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1313,7 +1313,7 @@ func TestIncAbsoluteNegativeValue(t *testing.T) {
 }
 
 func TestIncAbsoluteZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABS, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1328,7 +1328,7 @@ func TestIncAbsoluteZeroValue(t *testing.T) {
 }
 
 func TestIncAbsoluteXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABX, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1344,7 +1344,7 @@ func TestIncAbsoluteXPositiveValue(t *testing.T) {
 }
 
 func TestIncAbsoluteXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABX, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1360,7 +1360,7 @@ func TestIncAbsoluteXNegativeValue(t *testing.T) {
 }
 
 func TestIncAbsoluteXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INC_ABX, 0x10, 0xAE, BRK_IMP,
 	}
 
@@ -1376,7 +1376,7 @@ func TestIncAbsoluteXZeroValue(t *testing.T) {
 }
 
 func TestInxImpliedPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INX_IMP, BRK_IMP,
 	}
 
@@ -1391,7 +1391,7 @@ func TestInxImpliedPositiveValue(t *testing.T) {
 }
 
 func TestInxImpliedNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INX_IMP, BRK_IMP,
 	}
 
@@ -1406,7 +1406,7 @@ func TestInxImpliedNegativeValue(t *testing.T) {
 }
 
 func TestInxImpliedZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INX_IMP, BRK_IMP,
 	}
 
@@ -1421,7 +1421,7 @@ func TestInxImpliedZeroValue(t *testing.T) {
 }
 
 func TestInyImpliedPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INY_IMP, BRK_IMP,
 	}
 
@@ -1436,7 +1436,7 @@ func TestInyImpliedPositiveValue(t *testing.T) {
 }
 
 func TestInyImpliedNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INY_IMP, BRK_IMP,
 	}
 
@@ -1451,7 +1451,7 @@ func TestInyImpliedNegativeValue(t *testing.T) {
 }
 
 func TestInyImpliedZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		INY_IMP, BRK_IMP,
 	}
 
@@ -1466,7 +1466,7 @@ func TestInyImpliedZeroValue(t *testing.T) {
 }
 
 func TestDecZeroPagePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZER, 0xAE, BRK_IMP,
 	}
 
@@ -1481,7 +1481,7 @@ func TestDecZeroPagePositiveValue(t *testing.T) {
 }
 
 func TestDecZeroPageNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZER, 0xAE, BRK_IMP,
 	}
 
@@ -1496,7 +1496,7 @@ func TestDecZeroPageNegativeValue(t *testing.T) {
 }
 
 func TestDecZeroPageZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZER, 0xAE, BRK_IMP,
 	}
 
@@ -1511,7 +1511,7 @@ func TestDecZeroPageZeroValue(t *testing.T) {
 }
 
 func TestDecZeroPageXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZRX, 0x5A, BRK_IMP,
 	}
 
@@ -1527,7 +1527,7 @@ func TestDecZeroPageXPositiveValue(t *testing.T) {
 }
 
 func TestDecZeroPageXNagativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZRX, 0x5A, BRK_IMP,
 	}
 
@@ -1543,7 +1543,7 @@ func TestDecZeroPageXNagativeValue(t *testing.T) {
 }
 
 func TestDecZeroPageXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ZRX, 0x5A, BRK_IMP,
 	}
 
@@ -1559,7 +1559,7 @@ func TestDecZeroPageXZeroValue(t *testing.T) {
 }
 
 func TestDecAbsolutePositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABS, 0x5A, 0xEA, BRK_IMP,
 	}
 
@@ -1574,7 +1574,7 @@ func TestDecAbsolutePositiveValue(t *testing.T) {
 }
 
 func TestDecAbsoluteNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABS, 0x5A, 0xEA, BRK_IMP,
 	}
 
@@ -1589,7 +1589,7 @@ func TestDecAbsoluteNegativeValue(t *testing.T) {
 }
 
 func TestDecAbsoluteZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABS, 0x5A, 0xEA, BRK_IMP,
 	}
 
@@ -1604,7 +1604,7 @@ func TestDecAbsoluteZeroValue(t *testing.T) {
 }
 
 func TestDecAbsoluteXPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABX, 0x74, 0xEA, BRK_IMP,
 	}
 
@@ -1620,7 +1620,7 @@ func TestDecAbsoluteXPositiveValue(t *testing.T) {
 }
 
 func TestDecAbsoluteXNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABX, 0x74, 0xEA, BRK_IMP,
 	}
 
@@ -1636,7 +1636,7 @@ func TestDecAbsoluteXNegativeValue(t *testing.T) {
 }
 
 func TestDecAbsoluteXZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEC_ABX, 0x74, 0xEA, BRK_IMP,
 	}
 
@@ -1652,7 +1652,7 @@ func TestDecAbsoluteXZeroValue(t *testing.T) {
 }
 
 func TestDexImpliedPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEX_IMP, BRK_IMP,
 	}
 
@@ -1667,7 +1667,7 @@ func TestDexImpliedPositiveValue(t *testing.T) {
 }
 
 func TestDexImpliedNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEX_IMP, BRK_IMP,
 	}
 
@@ -1682,7 +1682,7 @@ func TestDexImpliedNegativeValue(t *testing.T) {
 }
 
 func TestDexImpliedZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEX_IMP, BRK_IMP,
 	}
 
@@ -1697,7 +1697,7 @@ func TestDexImpliedZeroValue(t *testing.T) {
 }
 
 func TestDeyImpliedPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEY_IMP, BRK_IMP,
 	}
 
@@ -1712,7 +1712,7 @@ func TestDeyImpliedPositiveValue(t *testing.T) {
 }
 
 func TestDeyImpliedNegativeValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEY_IMP, BRK_IMP,
 	}
 
@@ -1727,7 +1727,7 @@ func TestDeyImpliedNegativeValue(t *testing.T) {
 }
 
 func TestDeyImpliedZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		DEY_IMP, BRK_IMP,
 	}
 
@@ -1742,7 +1742,7 @@ func TestDeyImpliedZeroValue(t *testing.T) {
 }
 
 func TestClcImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLC_IMP, BRK_IMP,
 	}
 
@@ -1756,7 +1756,7 @@ func TestClcImplied(t *testing.T) {
 }
 
 func TestClcImpliedWithOtherFlagSet(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLC_IMP, BRK_IMP,
 	}
 
@@ -1772,7 +1772,7 @@ func TestClcImpliedWithOtherFlagSet(t *testing.T) {
 }
 
 func TestCldImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLD_IMP, BRK_IMP,
 	}
 
@@ -1786,7 +1786,7 @@ func TestCldImplied(t *testing.T) {
 }
 
 func TestCldImpliedWithOtherFlagSet(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLD_IMP, BRK_IMP,
 	}
 
@@ -1802,7 +1802,7 @@ func TestCldImpliedWithOtherFlagSet(t *testing.T) {
 }
 
 func TestCliImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLI_IMP, BRK_IMP,
 	}
 
@@ -1816,7 +1816,7 @@ func TestCliImplied(t *testing.T) {
 }
 
 func TestClvImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		CLV_IMP, BRK_IMP,
 	}
 
@@ -1830,7 +1830,7 @@ func TestClvImplied(t *testing.T) {
 }
 
 func TestSecImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		SEC_IMP, BRK_IMP,
 	}
 
@@ -1842,7 +1842,7 @@ func TestSecImplied(t *testing.T) {
 }
 
 func TestSedImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		SED_IMP, BRK_IMP,
 	}
 
@@ -1854,7 +1854,7 @@ func TestSedImplied(t *testing.T) {
 }
 
 func TestSeiImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		SEI_IMP, BRK_IMP,
 	}
 
@@ -1866,7 +1866,7 @@ func TestSeiImplied(t *testing.T) {
 }
 
 func TestAndImmediate(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		AND_IMM, 0xF0, BRK_IMP,
 	}
 
@@ -1879,7 +1879,7 @@ func TestAndImmediate(t *testing.T) {
 }
 
 func TestAndImmediateZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		AND_IMM, 0x08, BRK_IMP,
 	}
 
@@ -1894,7 +1894,7 @@ func TestAndImmediateZero(t *testing.T) {
 }
 
 func TestAndImmediateNegative(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		AND_IMM, 0xD9, BRK_IMP,
 	}
 
@@ -1909,7 +1909,7 @@ func TestAndImmediateNegative(t *testing.T) {
 }
 
 func TestEorImmediate(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		EOR_IMM, 0xF0, BRK_IMP,
 	}
 
@@ -1922,7 +1922,7 @@ func TestEorImmediate(t *testing.T) {
 }
 
 func TestEorImmediateZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		EOR_IMM, 0x45, BRK_IMP,
 	}
 
@@ -1936,7 +1936,7 @@ func TestEorImmediateZero(t *testing.T) {
 }
 
 func TestAorImmediate(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ORA_IMM, 0x10, BRK_IMP,
 	}
 
@@ -1950,7 +1950,7 @@ func TestAorImmediate(t *testing.T) {
 }
 
 func TestAorImmediateNegative(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ORA_IMM, 0xF0, BRK_IMP,
 	}
 
@@ -1964,7 +1964,7 @@ func TestAorImmediateNegative(t *testing.T) {
 }
 
 func TestBitZeroPageTwoLastBitSet(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		BIT_ZER, 0x30, BRK_IMP,
 	}
 
@@ -1983,7 +1983,7 @@ func TestBitZeroPageTwoLastBitSet(t *testing.T) {
 }
 
 func TestBitZeroPage(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		BIT_ZER, 0x50, BRK_IMP,
 	}
 
@@ -2002,7 +2002,7 @@ func TestBitZeroPage(t *testing.T) {
 }
 
 func TestTsxImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TSX_IMP, BRK_IMP,
 	}
 
@@ -2019,7 +2019,7 @@ func TestTsxImplied(t *testing.T) {
 }
 
 func TestTsxImpliedZeroValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TSX_IMP, BRK_IMP,
 	}
 
@@ -2036,7 +2036,7 @@ func TestTsxImpliedZeroValue(t *testing.T) {
 }
 
 func TestTxsImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		TXS_IMP, BRK_IMP,
 	}
 
@@ -2050,7 +2050,7 @@ func TestTxsImplied(t *testing.T) {
 }
 
 func TestPhaImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PHA_IMP, BRK_IMP,
 	}
 
@@ -2060,12 +2060,12 @@ func TestPhaImplied(t *testing.T) {
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFE))
-	asrt.Equal(t, memory[0xFF], uint8(0x33))
+	asrt.Equal(t, memory[0x01FF], uint8(0x33))
 	asrt.Equal(t, cpu.Cycle, Opcodes[PHA_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
 }
 
 func TestPhaImpliedMultiplePush(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PHA_IMP, PHA_IMP, PHA_IMP, BRK_IMP,
 	}
 
@@ -2075,14 +2075,14 @@ func TestPhaImpliedMultiplePush(t *testing.T) {
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFC))
-	asrt.Equal(t, memory[0xFF], uint8(0x33))
-	asrt.Equal(t, memory[0xFE], uint8(0x33))
-	asrt.Equal(t, memory[0xFD], uint8(0x33))
-	asrt.Equal(t, memory[0xFC], uint8(0x00))
+	asrt.Equal(t, memory[0x01FF], uint8(0x33))
+	asrt.Equal(t, memory[0x01FE], uint8(0x33))
+	asrt.Equal(t, memory[0x01FD], uint8(0x33))
+	asrt.Equal(t, memory[0x01FC], uint8(0x00))
 }
 
 func TestPhpImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PHP_IMP, BRK_IMP,
 	}
 
@@ -2099,7 +2099,7 @@ func TestPhpImplied(t *testing.T) {
 }
 
 func TestPhpImpliedMultiplePush(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PHP_IMP, PHP_IMP, PHP_IMP, BRK_IMP,
 	}
 
@@ -2118,35 +2118,35 @@ func TestPhpImpliedMultiplePush(t *testing.T) {
 }
 
 func TestPlaImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PLA_IMP, BRK_IMP,
 	}
 
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
-	memory[0xFF] = 0x15
+	memory[0x01FF] = 0x15
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
-	asrt.Equal(t, memory[0xFE], uint8(0x00))
-	asrt.Equal(t, memory[0xFF], uint8(0x15))
+	asrt.Equal(t, memory[0x01FE], uint8(0x00))
+	asrt.Equal(t, memory[0x01FF], uint8(0x15))
 	asrt.Equal(t, cpu.Accumulator, Register8(0x15))
 	asrt.Equal(t, cpu.Cycle, Opcodes[PLA_IMP].Cycles+Opcodes[BRK_IMP].Cycles)
 }
 
 func TestPlaImpliedNegative(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PLA_IMP, BRK_IMP,
 	}
 
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
-	memory[0xFF] = 0xAE
+	memory[0x01FF] = 0xAE
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
-	asrt.Equal(t, memory[0xFE], uint8(0x00))
-	asrt.Equal(t, memory[0xFF], uint8(0xAE))
+	asrt.Equal(t, memory[0x01FE], uint8(0x00))
+	asrt.Equal(t, memory[0x01FF], uint8(0xAE))
 	asrt.Equal(t, cpu.Accumulator, Register8(0xAE))
 	asrt.True(t, cpu.Status.Has(Negative))
 	asrt.False(t, cpu.Status.Has(Zero))
@@ -2154,13 +2154,13 @@ func TestPlaImpliedNegative(t *testing.T) {
 }
 
 func TestPlpImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PLP_IMP, BRK_IMP,
 	}
 
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFE
-	memory[0xFF] = 0b0101_0101
+	memory[0x01FF] = 0b0101_0101
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
@@ -2168,14 +2168,14 @@ func TestPlpImplied(t *testing.T) {
 }
 
 func TestPlpImpliedMultipleTime(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		PLP_IMP, PLP_IMP, BRK_IMP,
 	}
 
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFD
-	memory[0xFE] = 0b0101_0101
-	memory[0xFF] = 0b1111_0000
+	memory[0x01FE] = 0b0101_0101
+	memory[0x01FF] = 0b1111_0000
 	cpu.Run(&memory)
 
 	asrt.Equal(t, cpu.StackPointer, Register8(0xFF))
@@ -2184,7 +2184,7 @@ func TestPlpImpliedMultipleTime(t *testing.T) {
 
 // Need to add the negative
 func TestAslAccumulatorWithCarryAndZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ACC, BRK_IMP,
 	}
 
@@ -2199,7 +2199,7 @@ func TestAslAccumulatorWithCarryAndZero(t *testing.T) {
 }
 
 func TestAslAccumulatorWithCarryAndPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ACC, BRK_IMP,
 	}
 
@@ -2214,7 +2214,7 @@ func TestAslAccumulatorWithCarryAndPositiveValue(t *testing.T) {
 }
 
 func TestAslAccumulatorWithNegativeResult(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ACC, BRK_IMP,
 	}
 
@@ -2229,7 +2229,7 @@ func TestAslAccumulatorWithNegativeResult(t *testing.T) {
 }
 
 func TestAslZeroPageCarryAndZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ZER, 0x25, BRK_IMP,
 	}
 
@@ -2244,7 +2244,7 @@ func TestAslZeroPageCarryAndZero(t *testing.T) {
 }
 
 func TestAslZeroPageNegative(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ZER, 0x25, BRK_IMP,
 	}
 
@@ -2259,7 +2259,7 @@ func TestAslZeroPageNegative(t *testing.T) {
 }
 
 func TestAslZeroPageCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ASL_ZER, 0x25, BRK_IMP,
 	}
 
@@ -2274,7 +2274,7 @@ func TestAslZeroPageCarry(t *testing.T) {
 }
 
 func TestLsrAccumulatorPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LSR_ACC, BRK_IMP,
 	}
 
@@ -2289,7 +2289,7 @@ func TestLsrAccumulatorPositiveValue(t *testing.T) {
 }
 
 func TestLsrAccumulatorZeroAndCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LSR_ACC, BRK_IMP,
 	}
 
@@ -2304,7 +2304,7 @@ func TestLsrAccumulatorZeroAndCarry(t *testing.T) {
 }
 
 func TestLsrAccumulatorCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LSR_ACC, BRK_IMP,
 	}
 
@@ -2319,7 +2319,7 @@ func TestLsrAccumulatorCarry(t *testing.T) {
 }
 
 func TestLsrZeroPageCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		LSR_ZER, 0x33, BRK_IMP,
 	}
 
@@ -2334,7 +2334,7 @@ func TestLsrZeroPageCarry(t *testing.T) {
 }
 
 func TestRolAccumulatorPositive(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ACC, BRK_IMP,
 	}
 
@@ -2349,7 +2349,7 @@ func TestRolAccumulatorPositive(t *testing.T) {
 }
 
 func TestRolAccumulatorNegativeAndCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ACC, BRK_IMP,
 	}
 
@@ -2364,7 +2364,7 @@ func TestRolAccumulatorNegativeAndCarry(t *testing.T) {
 }
 
 func TestRolAccumulatorZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ACC, BRK_IMP,
 	}
 
@@ -2379,7 +2379,7 @@ func TestRolAccumulatorZero(t *testing.T) {
 }
 
 func TestRolAccumulatorWithPreviousCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ACC, BRK_IMP,
 	}
 
@@ -2396,7 +2396,7 @@ func TestRolAccumulatorWithPreviousCarry(t *testing.T) {
 }
 
 func TestRolZeroPageCarryAndZero(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ZER, 0x33, BRK_IMP,
 	}
 
@@ -2411,7 +2411,7 @@ func TestRolZeroPageCarryAndZero(t *testing.T) {
 }
 
 func TestRolZeroPageCarryAndZeroWithPreviousCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ZER, 0x33, BRK_IMP,
 	}
 
@@ -2427,7 +2427,7 @@ func TestRolZeroPageCarryAndZeroWithPreviousCarry(t *testing.T) {
 }
 
 func TestRolZeroPageCarryPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROL_ZER, 0x33, BRK_IMP,
 	}
 
@@ -2442,7 +2442,7 @@ func TestRolZeroPageCarryPositiveValue(t *testing.T) {
 }
 
 func TestRorAccumulatorPositiveValue(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROR_ACC, BRK_IMP,
 	}
 
@@ -2457,7 +2457,7 @@ func TestRorAccumulatorPositiveValue(t *testing.T) {
 }
 
 func TestRorAccumulatorPositiveWithPreviousCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROR_ACC, BRK_IMP,
 	}
 
@@ -2473,7 +2473,7 @@ func TestRorAccumulatorPositiveWithPreviousCarry(t *testing.T) {
 }
 
 func TestRorZeroPageCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ROR_ZER, 0x33, BRK_IMP,
 	}
 
@@ -2488,7 +2488,7 @@ func TestRorZeroPageCarry(t *testing.T) {
 }
 
 func TestJmpAbsolute(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		JMP_ABS, 0x00, 0x06,
 	}
 
@@ -2503,7 +2503,7 @@ func TestJmpAbsolute(t *testing.T) {
 }
 
 func TestJmpIndirect(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		JMP_IND, 0x52, 0x01,
 	}
 
@@ -2519,7 +2519,7 @@ func TestJmpIndirect(t *testing.T) {
 }
 
 func TestJsrAbsolute(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		JSR_ABS, 0x0f, 0x06,
 	}
 
@@ -2530,25 +2530,25 @@ func TestJsrAbsolute(t *testing.T) {
 
 	asrt.Equal(t, cpu.ProgramCounter, Register16(0x060f))
 	asrt.Equal(t, cpu.StackPointer, Register8(0xfd))
-	asrt.Equal(t, memory[0xff], uint8(0x00))
-	asrt.Equal(t, memory[0xfe], uint8(0x03))
+	asrt.Equal(t, memory[0x01ff], uint8(0x00))
+	asrt.Equal(t, memory[0x01fe], uint8(0x03))
 	asrt.False(t, cpu.Status.Has(Carry))
 	asrt.False(t, cpu.Status.Has(Zero))
 	asrt.False(t, cpu.Status.Has(Negative))
 }
 
 func TestRtsImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		RTS_IMP,
 	}
 
 	cpu := Cpu{}
 	cpu.StackPointer = 0xFD
-	memory[0xFF] = 0x00
-	memory[0xFE] = 0x03
+	memory[0x01FF] = 0x00
+	memory[0x01FE] = 0x03
 	cpu.Step(&memory)
 
-	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0004))
+	asrt.Equal(t, cpu.ProgramCounter, Register16(0x0003))
 	asrt.Equal(t, cpu.StackPointer, Register8(0xff))
 	asrt.False(t, cpu.Status.Has(Carry))
 	asrt.False(t, cpu.Status.Has(Zero))
@@ -2557,7 +2557,7 @@ func TestRtsImplied(t *testing.T) {
 
 // TODO: need to the some tesing
 func TestBneRelative(t *testing.T) {
-	memory := Memory{}
+	memory := Mem{}
 	memory[0x0608] = BNE_REL
 	memory[0x0609] = 0xF8
 
@@ -2570,7 +2570,7 @@ func TestBneRelative(t *testing.T) {
 }
 
 func TestNopImplied(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		NOP_IMP,
 	}
 
@@ -2582,7 +2582,7 @@ func TestNopImplied(t *testing.T) {
 }
 
 func TestAdcImmediate(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ADC_IMM, 0x04, BRK_IMP,
 	}
 
@@ -2596,7 +2596,7 @@ func TestAdcImmediate(t *testing.T) {
 }
 
 func TestAdcImmediateWithPreviousCarry(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ADC_IMM, 0x04, BRK_IMP,
 	}
 
@@ -2611,7 +2611,7 @@ func TestAdcImmediateWithPreviousCarry(t *testing.T) {
 }
 
 func TestAdcImmediateWithCarryOut(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ADC_IMM, 0xF4, BRK_IMP,
 	}
 
@@ -2624,7 +2624,7 @@ func TestAdcImmediateWithCarryOut(t *testing.T) {
 }
 
 func TestAdcImmediateWithOverflow(t *testing.T) {
-	memory := Memory{
+	memory := Mem{
 		ADC_IMM, 0x50, BRK_IMP,
 	}
 

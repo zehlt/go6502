@@ -1,4 +1,4 @@
-package cpu
+package go6502
 
 const (
 	Implied = iota
@@ -208,7 +208,7 @@ type Opcode struct {
 	ByteSize  int
 	Cycles    int
 	Mode      int
-	Operation func(cpu *Cpu, mem *Memory, mode int)
+	Operation func(cpu *Cpu, mem *Mem, mode int)
 }
 
 var Opcodes = map[uint8]Opcode{

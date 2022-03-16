@@ -7,5 +7,5 @@
 *.out
 go.work
 
-go6502
+mug
 infos/

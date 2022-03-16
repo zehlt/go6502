@@ -1,4 +1,4 @@
-package cpu
+package go6502
 
 import (
 	"testing"
@@ -6,8 +6,8 @@ import (
 	"github.com/zehlt/go6502/asrt"
 )
 
-func initSampleMemory() Memory {
-	mem := Memory{
+func initSampleMemory() Mem {
+	mem := Mem{
 		0x10, 0x00, 0x80, 0xE0,
 	}
 	return mem
@@ -17,7 +17,7 @@ func TestReadSingleByte(t *testing.T) {
 	mem := initSampleMemory()
 
 	var addr uint16 = 0x02
-	b := mem.readByte(addr)
+	b := mem.ReadByte(addr)
 
 	asrt.Equal(t, mem[addr], b)
 }
@@ -28,7 +28,7 @@ func TestWriteSingleByte(t *testing.T) {
 	var addr uint16 = 0xCA
 	var data uint8 = 0xEF
 
-	mem.writeByte(addr, data)
+	mem.WriteByte(addr, data)
 
 	asrt.Equal(t, mem[addr], data)
 }
@@ -39,13 +39,13 @@ func TestMultipleWriteAndRead(t *testing.T) {
 	var addr uint16 = 0xCA
 	var data uint8 = 0xEF
 
-	mem.writeByte(addr, data)
-	mem.writeByte(addr+2, data+2)
-	mem.writeByte(addr+10, data+10)
+	mem.WriteByte(addr, data)
+	mem.WriteByte(addr+2, data+2)
+	mem.WriteByte(addr+10, data+10)
 
-	got1 := mem.readByte(addr)
-	got2 := mem.readByte(addr + 2)
-	got3 := mem.readByte(addr + 10)
+	got1 := mem.ReadByte(addr)
+	got2 := mem.ReadByte(addr + 2)
+	got3 := mem.ReadByte(addr + 10)
 
 	asrt.Equal(t, mem[addr], got1)
 	asrt.Equal(t, mem[addr+2], got2)
@@ -61,7 +61,7 @@ func TestReadSingleWord(t *testing.T) {
 	var hi uint16 = uint16(mem[addr+1])
 
 	var want uint16 = ((hi << 8) | lo)
-	got := mem.readWord(addr)
+	got := mem.ReadWord(addr)
 
 	asrt.Equal(t, want, got)
 }
@@ -71,7 +71,7 @@ func TestWriteSingleWord(t *testing.T) {
 	var addr uint16 = 0xDE01
 	var word uint16 = 0x3080
 
-	mem.writeWord(addr, word)
+	mem.WriteWord(addr, word)
 
 	asrt.Equal(t, mem[addr], uint8(0x80))
 	asrt.Equal(t, mem[addr+1], uint8(0x30))
@@ -83,8 +83,8 @@ func TestWriteTwoWord(t *testing.T) {
 	var word1 uint16 = 0x3080
 	var word2 uint16 = 0xEADF
 
-	mem.writeWord(addr, word1)
-	mem.writeWord(addr+1, word2)
+	mem.WriteWord(addr, word1)
+	mem.WriteWord(addr+1, word2)
 
 	asrt.Equal(t, mem[addr], uint8(0x80))
 	asrt.Equal(t, mem[addr+1], uint8(0xDF))
@@ -101,7 +101,7 @@ func TestWriteBytes(t *testing.T) {
 		0x01, 0x58, 0xCE, 0x9D,
 	}
 
-	mem.writeBytes(addr, want)
+	mem.WriteBytes(addr, want)
 
 	for i := 0; i < len(want); i++ {
 		asrt.Equal(t, mem[addr+(uint16(i))], want[i])
